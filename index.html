@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Construcción</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #86868b;
+            font-weight: 400;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 16px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 24px 16px;
+            text-align: center;
+            text-decoration: none;
+            color: #1d1d1f;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .icon {
+            font-size: 2.2rem;
+            line-height: 1;
+        }
+
+        .label {
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: -0.2px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 48px;
+            color: #86868b;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 480px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Calculadora de Obra</h1>
+            <p class="subtitle">Materiales y mano de obra para construcción</p>
+        </header>
+
+        <div class="grid">
+            <a href="muros.html" class="card">
+                <span class="icon">🧱</span>
+                <span class="label">Muros</span>
+            </a>
+            <a href="cimentaciones.html" class="card">
+                <span class="icon">🏗️</span>
+                <span class="label">Cimentaciones</span>
+            </a>
+            <a href="columnas.html" class="card">
+                <span class="icon">🏛️</span>
+                <span class="label">Columnas</span>
+            </a>
+            <a href="vigas.html" class="card">
+                <span class="icon">📐</span>
+                <span class="label">Vigas</span>
+            </a>
+            <a href="losas.html" class="card">
+                <span class="icon">🪨</span>
+                <span class="label">Losas</span>
+            </a>
+            <a href="escaleras.html" class="card">
+                <span class="icon">🪜</span>
+                <span class="label">Escaleras</span>
+            </a>
+            <a href="cubiertas.html" class="card">
+                <span class="icon">🏠</span>
+                <span class="label">Techos/Cubiertas</span>
+            </a>
+            <a href="revoques.html" class="card">
+                <span class="icon">🧽</span>
+                <span class="label">Revoques</span>
+            </a>
+            <a href="pisos.html" class="card">
+                <span class="icon">🟫</span>
+                <span class="label">Pisos</span>
+            </a>
+            <a href="pintura.html" class="card">
+                <span class="icon">🎨</span>
+                <span class="label">Pintura</span>
+            </a>
+            <a href="electricas.html" class="card">
+                <span class="icon">⚡</span>
+                <span class="label">Inst. Eléctricas</span>
+            </a>
+            <a href="sanitarias.html" class="card">
+                <span class="icon">🚿</span>
+                <span class="label">Inst. Sanitarias</span>
+            </a>
+            <a href="gas.html" class="card">
+                <span class="icon">🔥</span>
+                <span class="label">Inst. de Gas</span>
+            </a>
+            <a href="carpinteria.html" class="card">
+                <span class="icon">🚪</span>
+                <span class="label">Carpintería</span>
+            </a>
+        </div>
+
+        <footer>
+            <p>Versión 1.0 · Datos basados en normas de construcción y rendimientos estándar</p>
+        </footer>
+    </div>
+</body>
+</html>
