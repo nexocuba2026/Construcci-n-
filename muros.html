@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Muros</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 720px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 36px 28px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.03);
+            margin: 20px 0;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 24px;
+            color: #86868b;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #1d1d1f;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: #86868b;
+            margin-bottom: 32px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+            color: #1d1d1f;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d2d2d7;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            background: #f9f9fb;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        select {
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2386868b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 18px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #86868b;
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.04);
+        }
+
+        .row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .row .form-group {
+            flex: 1;
+            min-width: 140px;
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background: #1d1d1f;
+            color: #ffffff;
+            border: none;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 8px;
+        }
+
+        .btn:hover {
+            background: #2d2d2f;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .results {
+            margin-top: 36px;
+            padding: 28px;
+            background: #f9f9fb;
+            border-radius: 20px;
+            display: none;
+        }
+
+        .results.visible {
+            display: block;
+        }
+
+        .results h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        th {
+            text-align: left;
+            font-weight: 500;
+            color: #86868b;
+            padding: 8px 4px;
+            border-bottom: 1px solid #d2d2d7;
+        }
+
+        td {
+            padding: 8px 4px;
+            border-bottom: 1px solid #f0f0f2;
+        }
+
+        .total-row {
+            font-weight: 600;
+        }
+
+        .explanation {
+            margin-top: 24px;
+            font-size: 0.8rem;
+            color: #86868b;
+            line-height: 1.5;
+            border-top: 1px solid #e5e5ea;
+            padding-top: 16px;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 24px 18px;
+            }
+            .row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Volver al inicio</a>
+        <h1>Cálculo de Muros</h1>
+        <p class="subtitle">Complete los datos para obtener materiales, mano de obra y costos</p>
+
+        <div class="form-group">
+            <label for="tipoMuro">Tipo de muro</label>
+            <select id="tipoMuro">
+                <option value="">-- Seleccione --</option>
+                <option value="ladrillo_soga">Ladrillo cerámico (soga - 15 cm)</option>
+                <option value="ladrillo_cabeza">Ladrillo cerámico (cabeza - 25 cm)</option>
+                <option value="ladrillo_hueco_soga">Ladrillo hueco (soga)</option>
+                <option value="ladrillo_hueco_cabeza">Ladrillo hueco (cabeza)</option>
+                <option value="bloque_12">Bloque de concreto (12 cm)</option>
+                <option value="bloque_15">Bloque de concreto (15 cm)</option>
+                <option value="bloque_20">Bloque de concreto (20 cm)</option>
+                <option value="piedra">Muro de piedra (mampostería)</option>
+                <option value="concreto_armado">Concreto armado (pantalla)</option>
+                <option value="drywall">Drywall (tablero yeso)</option>
+                <option value="panel_prefabricado">Panel prefabricado</option>
+                <option value="adobe">Adobe</option>
+                <option value="tapial">Tapial (tierra compactada)</option>
+            </select>
+        </div>
+
+        <div class="row">
+            <div class="form-group">
+                <label for="largo">Largo (m)</label>
+                <input type="number" id="largo" placeholder="Ej. 4.0" step="0.01" min="0">
+            </div>
+            <div class="form-group">
+                <label for="alto">Alto (m)</label>
+                <input type="number" id="alto" placeholder="Ej. 2.5" step="0.01" min="0">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="precioMaterial">Precio del material principal (CUP/unidad)</label>
+            <input type="number" id="precioMaterial" placeholder="Dejar vacío para usar precio por defecto" step="0.01" min="0">
+            <span style="font-size:0.8rem;color:#86868b;">Si no ingresa precio, se usará el precio de referencia.</span>
+        </div>
+
+        <div class="form-group">
+            <label for="manoObra">Tipo de mano de obra</label>
+            <select id="manoObra">
+                <option value="">-- Seleccione --</option>
+                <option value="precons">Precons III</option>
+                <option value="mipyme">MiPyme</option>
+                <option value="particular">Particular</option>
+            </select>
+        </div>
+
+        <button class="btn" id="calcularBtn">Calcular</button>
+
+        <div class="results" id="resultados">
+            <h2>Resultado</h2>
+            <table id="tablaMateriales">
+                <thead>
+                    <tr>
+                        <th>Material</th>
+                        <th>Cantidad</th>
+                        <th>Unidad</th>
+                        <th>Precio unit.</th>
+                        <th>Importe</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <p><strong>Total Materiales:</strong> <span id="totalMateriales"></span> CUP</p>
+
+            <table style="margin-top:20px;">
+                <thead>
+                    <tr>
+                        <th>Mano de obra</th>
+                        <th>Hombres</th>
+                        <th>Tiempo</th>
+                        <th>Precio</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaManoObra"></tbody>
+            </table>
+            <p><strong>Total Mano de Obra:</strong> <span id="totalManoObra"></span> CUP</p>
+            <p style="font-size:1.1rem; margin-top:12px;"><strong>Gran Total:</strong> <span id="granTotal"></span> CUP</p>
+
+            <div class="explanation" id="explicacion"></div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // Base de datos de muros: dosificación, rendimientos, descripciones
+            const dbMuros = {
+                'ladrillo_soga': {
+                    nombre: 'Ladrillo cerámico (soga - 15 cm)',
+                    unidadMaterial: 'ladrillos',
+                    materialPorM2: 38, // ladrillos por m² (25x12x6.5 cm con junta 1.5 cm)
+                    precioMaterialDefecto: 45,
+                    morteroPorM2: 0.018, // m³ de mortero por m² de muro
+                    // Proporción mortero cemento:arena 1:4
+                    cementoPorM3Mortero: 350, // kg de cemento por m³ de mortero (aprox 8 sacos de 42.5 kg)
+                    arenaPorM3Mortero: 1.1, // m³ de arena por m³ de mortero
+                    calPorM3Mortero: 0, // no lleva cal
+                    // Rendimiento mano de obra (horas-hombre por m²)
+                    horasHombrePorM2: {
+                        precons: 0.9,
+                        mipyme: 1.1,
+                        particular: 1.4
+                    },
+                    cuadrillaEstandar: { oficiales: 1, ayudantes: 1 },
+                    explicacion: 'Muro no portante de ladrillo cerámico asentado de soga (espesor 15 cm). Se utiliza como división interior en viviendas. No está diseñado para soportar cargas estructurales. Se recomienda confinarlo con vigas y columnas de amarre cada 3 metros. Mortero 1:4 (cemento:arena).'
+                },
+                'ladrillo_cabeza': {
+                    nombre: 'Ladrillo cerámico (cabeza - 25 cm)',
+                    unidadMaterial: 'ladrillos',
+                    materialPorM2: 60,
+                    precioMaterialDefecto: 60,
+                    morteroPorM2: 0.027,
+                    cementoPorM3Mortero: 350,
+                    arenaPorM3Mortero: 1.1,
+                    calPorM3Mortero: 0,
+                    horasHombrePorM2: {
+                        precons: 1.2,
+                        mipyme: 1.5,
+                        particular: 1.8
+                    },
+                    cuadrillaEstandar: { oficiales: 1, ayudantes: 1 },
+                    explicacion: 'Muro portante de ladrillo cerámico asentado de cabeza (espesor 25 cm). Soporta cargas verticales y se usa en fachadas y muros de carga. Requiere confinamiento con elementos de concreto armado. Mortero 1:4.'
+                },
+                'ladrillo_hueco_soga': {
+                    nombre: 'Ladrillo hueco (soga)',
+                    unidadMaterial: 'ladrillos',
+                    materialPorM2: 15,
+                    precioMaterialDefecto: 70,
+                    morteroPorM2: 0.012,
+                    cementoPorM3Mortero: 350,
+                    arenaPorM3Mortero: 1.1,
+                    calPorM3Mortero: 0,
+                    horasHombrePorM2: {
+                        precons: 0.7,
+                        mipyme: 0.9,
+                        particular: 1.2
+                    },
+                    cuadrillaEstandar: { oficiales: 1, ayudantes: 0.5 },
+                    explicacion: 'Muro ligero de ladrillo hueco, utilizado para cerramientos no estructurales. Buena aislación térmica y acústica. No apto para soportar cargas.'
+                },
+                'ladrillo_hueco_cabeza': {
+                    nombre: 'Ladrillo hueco (cabeza)',
+                    unidadMaterial: 'ladrillos',
+                    materialPorM2: 24,
+                    precioMaterialDefecto: 90,
+                    morteroPorM2: 0.018,
+                    cementoPorM3Mortero: 350,
+                    arenaPorM3Mortero: 1.1,
+                    calPorM3Mortero: 0,
+                    horasHombrePorM2: {
+                        precons: 1.0,
+                        mipyme: 1.3,
+                        particular: 1.6
+                    },
+                    cuadrillaEstandar: { oficiales: 1, ayudantes: 1 },
+                    explicacion: 'Muro de ladrillo hueco de mayor espesor, con cierta capacidad portante. Usado en fachadas y muros divisorios en construcciones de baja altura.'
+                },
+                'bloque_12': {
+                    nombre: 'Bloque de concreto (12 cm)',
+                    unidadMaterial: 'bloques',
+                    materialPorM2: 12.5,
+                    precioMaterialDefecto: 85,
+                    morteroPorM2: 0.016,
+                    cementoPorM3Mortero: 300,
+                    arenaPorM3Mortero: 1.2,
+                    calPorM3Mortero: 50, // kg cal por m³
+                    horasHombrePorM2: {
+                        precons: 0.8,
+                        mipyme: 1.0,
+                        particular: 1.3
+                    },
+                    cuadrillaEstandar: { oficiales: 1, ayudantes: 0.5 },
+                    explicacion: 'Muro divisorio de bloques de concreto de 12 cm de espesor. Rápida ejecución. No portante. Mortero 1:5 con adición de cal para trabajabilidad.'
+                },
+                'bloque_15': {
+                    nombre: 'Bloque de concreto (15 cm)',
+                    unidadMaterial: 'bloques',
+                    materialPorM2: 12.5,
+                    precioMaterialDefecto: 100,
+                    morteroPorM2: 0.020,
+                    cementoPorM3Mortero: 350,
+                    arenaPorM3Mortero: 1.1,
+                    calPorM3Mortero: 60,
+                    horasHombrePorM2: {
+                        precons: 1.0,
+                        mipyme: 1.2,
+                        particular: 1.5
+                    },
+                    cuadrillaEstandar: { oficiales: 1, ayudantes: 1 },
+                    explicacion: 'Muro de bloque de concreto de 15 cm, apto para viviendas de una o dos plantas. Puede ser portante si se rellenan las celdas. Mortero 1:4 con cal.'
+                },
+                'bloque_20': {
+                    nombre: 'Bloque de concreto (20 cm)',
+                    unidadMaterial: 'bloques',
+                    materialPorM2: 12.5,
+                    precioMaterialDefecto: 120,
+                    morteroPorM2: 0.025,
+                    cementoPorM3Mortero: 350,
+                    arenaPorM3Mortero: 1.1,
+                    calPorM3Mortero: 0,
+                    horasHombrePorM2: {
+                        precons: 1.2,
+                        mipyme: 1.5,
+                        particular: 1.8
+                    },
+                    cuadrillaEstandar: { oficiales: 1, ayudantes: 1 },
+                    explicacion: 'Muro de carga de bloque de concreto de 20 cm. Frecuente en muros perimetrales y contención ligera. Requiere refuerzo vertical según diseño. Mortero 1:4.'
+                },
+                'piedra': {
+                    nombre: 'Muro de piedra (mampostería)',
+                    unidadMaterial: 'piedra (m³)',
+                    materialPorM2: 0.35, // m³ de piedra por m²
+                    precioMaterialDefecto: 250,
+                    morteroPorM2: 0.040,
+                    cementoPorM3Mortero: 400,
+                    arenaPorM3Mortero: 1.0,
+                    calPorM3Mortero: 0,
+                    horasHombrePorM2: {
+                        precons: 2.5,
+                        mipyme: 3.0,
+                        particular: 3.5
+                    },
+                    cuadrillaEstandar: { oficiales: 2, ayudantes: 1 },
+                    explicacion: 'Muro de piedra asentada con mortero. Usado en muros de contención, cimientos y cerramientos rústicos. Requiere mano de obra especializada.'
+                },
+                'concreto_armado': {
+                    nombre: 'Concreto armado (pantalla)',
+                    unidadMaterial: 'concreto (m³)',
+                    materialPorM2: 0.15, // espesor 15 cm
+                    precioMaterialDefecto: 2200, // precio por m³ de concreto premezclado
+                    // No lleva mortero aparte, se dosifica concreto
+                    concreto: true,
+                    cementoPorM3Concreto: 350, // kg
+                    arenaPorM3Concreto: 0.56, // m³
+                    gravaPorM3Concreto: 0.84, // m³
+                    aceroPorM3: 100, // kg de acero por m³ de concreto (promedio)
+                    horasHombrePorM2: {
+                        precons: 2.0,
+                        mipyme: 2.5,
+                        particular: 3.0
+                    },
+                    cuadrillaEstandar: { oficiales: 2, ayudantes: 2 },
+                    explicacion: 'Muro de contención o estructural de concreto armado. Incluye encofrado, armadura y vaciado. Concreto f\'c=210 kg/cm². El acero se estima en 100 kg/m³.'
+                },
+                'drywall': {
+                    nombre: 'Drywall (tablero yeso)',
+                    unidadMaterial: 'planchas',
+                    materialPorM2: 0.35, // planchas de 1.20x2.40 = 2.88 m² → aprox 0.35 planchas/m²
+                    precioMaterialDefecto: 350,
+                    morteroPorM2: 0,
+                    // Drywall usa estructura metálica + tornillos + masilla
+                    estructuraMetalicaPorM2: 1.2, // metros de perfil por m²
+                    horasHombrePorM2: {
+                        precons: 0.5,
+                        mipyme: 0.6,
+                        particular: 0.8
+                    },
+                    cuadrillaEstandar: { oficiales: 1, ayudantes: 0.5 },
+                    explicacion: 'Sistema de tabiquería ligera con estructura de acero galvanizado y placas de yeso. Rápida instalación, ideal para divisiones interiores. No soporta cargas.'
+                },
+                'panel_prefabricado': {
+                    nombre: 'Panel prefabricado',
+                    unidadMaterial: 'panel',
+                    materialPorM2: 0.25, // paneles grandes
+                    precioMaterialDefecto: 800,
+                    morteroPorM2: 0.005,
+                    cementoPorM3Mortero: 350,
+                    arenaPorM3Mortero: 1.1,
+                    calPorM3Mortero: 0,
+                    horasHombrePorM2: {
+                        precons: 0.3,
+                        mipyme: 0.4,
+                        particular: 0.5
+                    },
+                    cuadrillaEstandar: { oficiales: 1, ayudantes: 0.5 },
+                    explicacion: 'Paneles prefabricados de concreto o aligerados, ensamblados en sitio con grúa. Construcción industrializada de muy rápida ejecución.'
+                },
+                'adobe': {
+                    nombre: 'Adobe',
+                    unidadMaterial: 'adobes',
+                    materialPorM2: 25,
+                    precioMaterialDefecto: 30,
+                    morteroPorM2: 0.025,
+                    cementoPorM3Mortero: 200, // mortero de barro estabilizado con poco cemento
+                    arenaPorM3Mortero: 0.8,
+                    calPorM3Mortero: 0,
+                    horasHombrePorM2: {
+                        precons: 1.5,
+                        mipyme: 1.8,
+                        particular: 2.2
+                    },
+                    cuadrillaEstandar: { oficiales: 2, ayudantes: 1 },
+                    explicacion: 'Muro tradicional de bloques de tierra compactada. Excelente aislante térmico. Requiere protección contra humedad (sobrecimiento y aleros). Mano de obra intensiva.'
+                },
+                'tapial': {
+                    nombre: 'Tapial (tierra compactada)',
+                    unidadMaterial: 'tierra (m³)',
+                    materialPorM2: 0.30,
+                    precioMaterialDefecto: 80,
+                    morteroPorM2: 0,
+                    horasHombrePorM2: {
+                        precons: 2.0,
+                        mipyme: 2.5,
+                        particular: 3.0
+                    },
+                    cuadrillaEstandar: { oficiales: 2, ayudantes: 2 },
+                    explicacion: 'Muro de tierra compactada in situ mediante encofrados. Técnica ancestral de bajo impacto ambiental. Alta resistencia y masa térmica. Requiere protección superficial.'
+                }
+            };
+
+            const preciosInsumos = {
+                cemento: 380, // CUP/saco 42.5 kg
+                arena: 280,   // CUP/m³
+                grava: 300,   // CUP/m³
+                cal: 150,     // CUP/saco 25 kg
+                acero: 22,    // CUP/kg
+                agua: 0.10,   // CUP/litro
+                perfilDrywall: 120, // CUP/m lineal
+                tornilloDrywall: 5, // CUP/unidad aprox
+                masillaDrywall: 80,  // CUP/kg aprox
+                planchaDrywall: 350, // CUP/plancha
+            };
+
+            const preciosManoObra = {
+                precons: 350,   // CUP/m²
+                mipyme: 280,
+                particular: 450
+            };
+
+            function calcular() {
+                const tipo = document.getElementById('tipoMuro').value;
+                const largo = parseFloat(document.getElementById('largo').value);
+                const alto = parseFloat(document.getElementById('alto').value);
+                const precioMatInput = document.getElementById('precioMaterial').value;
+                const manoObraTipo = document.getElementById('manoObra').value;
+                const resultadosDiv = document.getElementById('resultados');
+
+                if (!tipo || isNaN(largo) || isNaN(alto) || largo <= 0 || alto <= 0 || !manoObraTipo) {
+                    alert('Complete todos los campos obligatorios (tipo de muro, largo, alto y tipo de mano de obra).');
+                    return;
+                }
+
+                const datos = dbMuros[tipo];
+                const area = largo * alto;
+                const precioMaterial = precioMatInput ? parseFloat(precioMatInput) : datos.precioMaterialDefecto;
+
+                // Materiales
+                let rowsMateriales = '';
+                let totalMat = 0;
+
+                const unidadMat = datos.unidadMaterial;
+                const cantidadMat = Math.ceil(datos.materialPorM2 * area * 1.05); // 5% desperdicio
+                const importeMat = cantidadMat * precioMaterial;
+                totalMat += importeMat;
+                rowsMateriales += `<tr><td>${datos.nombre.split('(')[0].trim()}</td><td>${cantidadMat}</td><td>${unidadMat}</td><td>${precioMaterial.toFixed(2)}</td><td>${importeMat.toFixed(2)}</td></tr>`;
+
+                // Mortero o concreto
+                if (datos.concreto) {
+                    // Concreto armado
+                    const volConcreto = datos.materialPorM2 * area * 1.05;
+                    const cementoKg = datos.cementoPorM3Concreto * volConcreto;
+                    const cementoSacos = Math.ceil(cementoKg / 42.5);
+                    const arenaM3 = datos.arenaPorM3Concreto * volConcreto;
+                    const gravaM3 = datos.gravaPorM3Concreto * volConcreto;
+                    const aceroKg = datos.aceroPorM3 * volConcreto;
+                    const aguaLitros = Math.ceil(180 * volConcreto); // ~180 L/m³
+
+                    const importeCemento = cementoSacos * preciosInsumos.cemento;
+                    const importeArena = arenaM3 * preciosInsumos.arena;
+                    const importeGrava = gravaM3 * preciosInsumos.grava;
+                    const importeAcero = aceroKg * preciosInsumos.acero;
+                    const importeAgua = aguaLitros * preciosInsumos.agua;
+                    totalMat += importeCemento + importeArena + importeGrava + importeAcero + importeAgua;
+
+                    rowsMateriales += `<tr><td>Cemento</td><td>${cementoSacos}</td><td>sacos (42.5 kg)</td><td>${preciosInsumos.cemento.toFixed(2)}</td><td>${importeCemento.toFixed(2)}</td></tr>`;
+                    rowsMateriales += `<tr><td>Arena gruesa</td><td>${arenaM3.toFixed(2)}</td><td>m³</td><td>${preciosInsumos.arena.toFixed(2)}</td><td>${importeArena.toFixed(2)}</td></tr>`;
+                    rowsMateriales += `<tr><td>Grava</td><td>${gravaM3.toFixed(2)}</td><td>m³</td><td>${preciosInsumos.grava.toFixed(2)}</td><td>${importeGrava.toFixed(2)}</td></tr>`;
+                    rowsMateriales += `<tr><td>Acero de refuerzo</td><td>${aceroKg.toFixed(1)}</td><td>kg</td><td>${preciosInsumos.acero.toFixed(2)}</td><td>${importeAcero.toFixed(2)}</td></tr>`;
+                    rowsMateriales += `<tr><td>Agua</td><td>${aguaLitros}</td><td>litros</td><td>${preciosInsumos.agua.toFixed(2)}</td><td>${importeAgua.toFixed(2)}</td></tr>`;
+                } else if (datos.morteroPorM2 > 0) {
+                    const volMortero = datos.morteroPorM2 * area * 1.05;
+                    const cementoKgM = datos.cementoPorM3Mortero * volMortero;
+                    const cementoSacosM = Math.ceil(cementoKgM / 42.5);
+                    const arenaM3M = datos.arenaPorM3Mortero * volMortero;
+                    const calKg = (datos.calPorM3Mortero || 0) * volMortero;
+                    const calSacos = calKg > 0 ? Math.ceil(calKg / 25) : 0;
+                    const aguaLitrosM = Math.ceil(200 * volMortero); // aprox 200 L/m³
+
+                    const importeCementoM = cementoSacosM * preciosInsumos.cemento;
+                    const importeArenaM = arenaM3M * preciosInsumos.arena;
+                    const importeCal = calSacos * preciosInsumos.cal;
+                    const importeAguaM = aguaLitrosM * preciosInsumos.agua;
+                    totalMat += importeCementoM + importeArenaM + importeCal + importeAguaM;
+
+                    rowsMateriales += `<tr><td>Cemento</td><td>${cementoSacosM}</td><td>sacos (42.5 kg)</td><td>${preciosInsumos.cemento.toFixed(2)}</td><td>${importeCementoM.toFixed(2)}</td></tr>`;
+                    rowsMateriales += `<tr><td>Arena gruesa</td><td>${arenaM3M.toFixed(2)}</td><td>m³</td><td>${preciosInsumos.arena.toFixed(2)}</td><td>${importeArenaM.toFixed(2)}</td></tr>`;
+                    if (calSacos > 0) {
+                        rowsMateriales += `<tr><td>Cal hidráulica</td><td>${calSacos}</td><td>sacos (25 kg)</td><td>${preciosInsumos.cal.toFixed(2)}</td><td>${importeCal.toFixed(2)}</td></tr>`;
+                    }
+                    rowsMateriales += `<tr><td>Agua</td><td>${aguaLitrosM}</td><td>litros</td><td>${preciosInsumos.agua.toFixed(2)}</td><td>${importeAguaM.toFixed(2)}</td></tr>`;
+                } else if (tipo === 'drywall') {
+                    // Materiales drywall
+                    const planchas = Math.ceil(0.35 * area * 1.05);
+                    const perfilM = Math.ceil(1.2 * area * 1.05);
+                    const tornillos = Math.ceil(20 * area); // estimado 20 tornillos/m²
+                    const masillaKg = Math.ceil(0.5 * area); // 0.5 kg/m²
+                    const importePlanchas = planchas * preciosInsumos.planchaDrywall;
+                    const importePerfil = perfilM * preciosInsumos.perfilDrywall;
+                    const importeTornillos = tornillos * preciosInsumos.tornilloDrywall;
+                    const importeMasilla = masillaKg * preciosInsumos.masillaDrywall;
+                    totalMat += importePlanchas + importePerfil + importeTornillos + importeMasilla;
+                    rowsMateriales += `<tr><td>Planchas de yeso</td><td>${planchas}</td><td>unidad</td><td>${preciosInsumos.planchaDrywall.toFixed(2)}</td><td>${importePlanchas.toFixed(2)}</td></tr>`;
+                    rowsMateriales += `<tr><td>Perfil metálico</td><td>${perfilM}</td><td>m</td><td>${preciosInsumos.perfilDrywall.toFixed(2)}</td><td>${importePerfil.toFixed(2)}</td></tr>`;
+                    rowsMateriales += `<tr><td>Tornillos</td><td>${tornillos}</td><td>unidad</td><td>${preciosInsumos.tornilloDrywall.toFixed(2)}</td><td>${importeTornillos.toFixed(2)}</td></tr>`;
+                    rowsMateriales += `<tr><td>Masilla</td><td>${masillaKg}</td><td>kg</td><td>${preciosInsumos.masillaDrywall.toFixed(2)}</td><td>${importeMasilla.toFixed(2)}</td></tr>`;
+                } else if (tipo === 'tapial') {
+                    // Tapial solo tierra, posible estabilizante
+                    const tierraM3 = datos.materialPorM2 * area * 1.05;
+                    const importeTierra = tierraM3 * precioMaterial;
+                    totalMat += importeTierra;
+                    rowsMateriales = `<tr><td>Tierra para tapial</td><td>${tierraM3.toFixed(2)}</td><td>m³</td><td>${precioMaterial.toFixed(2)}</td><td>${importeTierra.toFixed(2)}</td></tr>`;
+                }
+
+                document.getElementById('tablaMateriales').innerHTML = rowsMateriales;
+                document.getElementById('totalMateriales').textContent = totalMat.toFixed(2);
+
+                // Mano de obra
+                const horasPorM2 = datos.horasHombrePorM2[manoObraTipo];
+                const horasTotal = horasPorM2 * area;
+                const cuadrilla = datos.cuadrillaEstandar;
+                const totalHombres = cuadrilla.oficiales + cuadrilla.ayudantes;
+                // Jornada 8 horas
+                const dias = Math.ceil((horasTotal / (totalHombres * 8)) * 10) / 10; // redondeo a 1 decimal
+                const precioMOm2 = preciosManoObra[manoObraTipo];
+                const importeMO = precioMOm2 * area;
+
+                const manoObraRow = `<tr>
+                    <td>${manoObraTipo === 'precons' ? 'Precons III' : manoObraTipo === 'mipyme' ? 'MiPyme' : 'Particular'}</td>
+                    <td>${totalHombres} (${cuadrilla.oficiales} of. + ${cuadrilla.ayudantes} ayud.)</td>
+                    <td>${dias} día(s)</td>
+                    <td>${importeMO.toFixed(2)} CUP</td>
+                </tr>`;
+                document.getElementById('tablaManoObra').innerHTML = manoObraRow;
+                document.getElementById('totalManoObra').textContent = importeMO.toFixed(2);
+
+                const granTotal = totalMat + importeMO;
+                document.getElementById('granTotal').textContent = granTotal.toFixed(2);
+
+                document.getElementById('explicacion').textContent = datos.explicacion || '';
+
+                resultadosDiv.classList.add('visible');
+            }
+
+            document.getElementById('calcularBtn').addEventListener('click', calcular);
+        })();
+    </script>
+</body>
+</html>
