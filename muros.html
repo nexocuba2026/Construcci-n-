@@ -148,6 +148,7 @@
             background: #f9f9fb;
             border-radius: 20px;
             display: none;
+            overflow-x: auto;
         }
 
         .results.visible {
@@ -164,8 +165,9 @@
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
             table-layout: auto;
+            word-break: break-word;
         }
 
         .tabla-materiales th {
@@ -174,11 +176,13 @@
             color: #86868b;
             padding: 6px 4px;
             border-bottom: 1px solid #d2d2d7;
+            white-space: nowrap;
         }
 
         .tabla-materiales td {
             padding: 6px 4px;
             border-bottom: 1px solid #f0f0f2;
+            vertical-align: top;
         }
 
         .tabla-materiales tr:last-child td {
@@ -247,7 +251,6 @@
         <h1>Cálculo de Muros</h1>
         <p class="subtitle">Configure los parámetros para obtener materiales, mano de obra y costos</p>
 
-        <!-- Tipo de muro general -->
         <div class="form-group">
             <label for="tipoMuro">Tipo de muro</label>
             <select id="tipoMuro">
@@ -259,10 +262,8 @@
             </select>
         </div>
 
-        <!-- Contenedor dinámico de opciones específicas -->
         <div id="opcionesEspecificas"></div>
 
-        <!-- Dimensiones del muro -->
         <div class="row">
             <div class="form-group">
                 <label for="largo">Largo (m)</label>
@@ -274,7 +275,6 @@
             </div>
         </div>
 
-        <!-- Desperdicio global -->
         <div class="form-group">
             <label for="desperdicio">Desperdicio (%)</label>
             <select id="desperdicio">
@@ -286,7 +286,6 @@
             </select>
         </div>
 
-        <!-- Mano de obra -->
         <div class="form-group">
             <label for="manoObra">Tipo de mano de obra</label>
             <select id="manoObra">
@@ -299,12 +298,8 @@
 
         <button class="btn" id="calcularBtn">Calcular</button>
 
-        <!-- Sketch o croquis del tipo de muro -->
-        <div class="sketch" id="sketchContainer">
-            <!-- SVG se inyecta por JS -->
-        </div>
+        <div class="sketch" id="sketchContainer"></div>
 
-        <!-- Resultados -->
         <div class="results" id="resultados">
             <h2>Resultado</h2>
             <table class="tabla-materiales" id="tablaMateriales">
@@ -345,7 +340,6 @@
 
     <script>
         (function() {
-            // Referencias del DOM
             const tipoMuroSelect = document.getElementById('tipoMuro');
             const opcionesEspecificas = document.getElementById('opcionesEspecificas');
             const largoInput = document.getElementById('largo');
@@ -358,7 +352,6 @@
             const copiarBtn = document.getElementById('copiarBtn');
             const copyNotice = document.getElementById('copyNotice');
 
-            // Precios por defecto de insumos comunes (se actualizarán según input)
             const preciosInsumos = {
                 cementoP250: 350,
                 cementoP350: 380,
@@ -368,14 +361,12 @@
                 acero: 22
             };
 
-            // Precios mano de obra por m² según tipo (datos empíricos)
             const preciosManoObra = {
                 precons: 350,
                 mipyme: 280,
                 particular: 450
             };
 
-            // Datos de rendimientos (horas hombre por m²) y cuadrilla
             const rendimientos = {
                 bloque: { precons: 0.9, mipyme: 1.1, particular: 1.4, oficiales: 1, ayudantes: 1 },
                 ladrillo_hueco: { precons: 0.7, mipyme: 0.9, particular: 1.2, oficiales: 1, ayudantes: 0.5 },
@@ -387,7 +378,6 @@
                 pladur: { precons: 0.5, mipyme: 0.6, particular: 0.8, oficiales: 1, ayudantes: 0.5 }
             };
 
-            // Función para renderizar opciones según tipo de muro
             function actualizarOpciones() {
                 const tipo = tipoMuroSelect.value;
                 let html = '';
@@ -573,12 +563,9 @@
                 }
 
                 opcionesEspecificas.innerHTML = html;
-
-                // Mostrar croquis según tipo
                 mostrarCroquis(tipo);
             }
 
-            // Función para mostrar croquis simple con SVG
             function mostrarCroquis(tipo) {
                 sketchContainer.classList.add('visible');
                 let svg = '';
@@ -619,7 +606,6 @@
                 sketchContainer.innerHTML = svg;
             }
 
-            // Evento cambio tipo de muro
             tipoMuroSelect.addEventListener('change', actualizarOpciones);
             actualizarOpciones();
 
@@ -630,7 +616,6 @@
                 return isNaN(val) ? defaultVal : val;
             }
 
-            // Copiar resultados
             copiarBtn.addEventListener('click', function() {
                 if (!resultadosDiv.classList.contains('visible')) return;
                 const texto = resultadosDiv.innerText;
@@ -642,7 +627,6 @@
                 });
             });
 
-            // Calcular
             calcularBtn.addEventListener('click', function() {
                 const tipo = tipoMuroSelect.value;
                 const largo = getInputVal('largo');
@@ -660,11 +644,9 @@
                 let tablaMaterialesHTML = '';
                 let explicacion = '';
 
-                // Dosificación mortero 1:3 (cemento:arena)
-                const cementoKgPorM3 = 340; // ~8 sacos de 42.5 kg por m³ de mortero
+                const cementoKgPorM3 = 340;
                 const arenaM3PorM3 = 1.1;
 
-                // Variables comunes
                 let precioCementoBolsa = 0;
                 let precioArenaM3 = 0;
                 let tipoCemento = 'P250';
@@ -853,7 +835,6 @@
                     var rend = rendimientos.pladur;
                 }
 
-                // Mano de obra
                 const horasPorM2 = rend[manoTipo];
                 const horasTotal = horasPorM2 * area;
                 const totalHombres = rend.oficiales + rend.ayudantes;
