@@ -160,28 +160,34 @@
             margin-bottom: 20px;
         }
 
-        table {
+        .tabla-materiales {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            table-layout: auto;
         }
 
-        th {
+        .tabla-materiales th {
             text-align: left;
             font-weight: 500;
             color: #86868b;
-            padding: 8px 4px;
+            padding: 6px 4px;
             border-bottom: 1px solid #d2d2d7;
         }
 
-        td {
-            padding: 8px 4px;
+        .tabla-materiales td {
+            padding: 6px 4px;
             border-bottom: 1px solid #f0f0f2;
         }
 
-        .total-row {
+        .tabla-materiales tr:last-child td {
+            border-bottom: none;
+        }
+
+        .totales {
             font-weight: 600;
+            margin-bottom: 12px;
         }
 
         .explanation {
@@ -301,7 +307,7 @@
         <!-- Resultados -->
         <div class="results" id="resultados">
             <h2>Resultado</h2>
-            <table id="tablaMateriales">
+            <table class="tabla-materiales" id="tablaMateriales">
                 <thead>
                     <tr>
                         <th>Material</th>
@@ -313,9 +319,9 @@
                 </thead>
                 <tbody></tbody>
             </table>
-            <p><strong>Total Materiales:</strong> <span id="totalMateriales"></span> CUP</p>
+            <p class="totales"><strong>Total Materiales:</strong> <span id="totalMateriales"></span> CUP</p>
 
-            <table style="margin-top:20px;">
+            <table class="tabla-materiales" style="margin-top:20px;" id="tablaManoObraTabla">
                 <thead>
                     <tr>
                         <th>Mano de obra</th>
@@ -326,8 +332,8 @@
                 </thead>
                 <tbody id="tablaManoObra"></tbody>
             </table>
-            <p><strong>Total Mano de Obra:</strong> <span id="totalManoObra"></span> CUP</p>
-            <p style="font-size:1.1rem; margin-top:12px;"><strong>Gran Total:</strong> <span id="granTotal"></span> CUP</p>
+            <p class="totales"><strong>Total Mano de Obra:</strong> <span id="totalManoObra"></span> CUP</p>
+            <p style="font-size:1.1rem; margin-top:12px;" class="totales"><strong>Gran Total:</strong> <span id="granTotal"></span> CUP</p>
 
             <button class="btn btn-copy" id="copiarBtn">
                 📋 Copiar resultados <span class="copy-notice" id="copyNotice">¡Copiado!</span>
@@ -353,13 +359,13 @@
             const copyNotice = document.getElementById('copyNotice');
 
             // Precios por defecto de insumos comunes (se actualizarán según input)
-            let preciosInsumos = {
-                cementoP250: 350, // CUP/saco 42.5kg
+            const preciosInsumos = {
+                cementoP250: 350,
                 cementoP350: 380,
-                arena: 280, // CUP/m³
-                cal: 150, // CUP/saco 25kg
-                agua: 0.10, // CUP/litro
-                acero: 22 // CUP/kg
+                arena: 280,
+                cal: 150,
+                agua: 0.10,
+                acero: 22
             };
 
             // Precios mano de obra por m² según tipo (datos empíricos)
@@ -529,6 +535,12 @@
                         </div>
                         <div class="row">
                             <div class="form-group">
+                                <label for="separacionPerfiles">Separación entre montantes (cm)</label>
+                                <input type="number" id="separacionPerfiles" placeholder="Ej. 40" value="40" step="1" min="20" max="120">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group">
                                 <label for="precioPlancha">Precio plancha (CUP)</label>
                                 <input type="number" id="precioPlancha" placeholder="Ej. 350" step="0.01" min="0">
                             </div>
@@ -609,10 +621,8 @@
 
             // Evento cambio tipo de muro
             tipoMuroSelect.addEventListener('change', actualizarOpciones);
-            // Inicializar por si acaso
             actualizarOpciones();
 
-            // Función para obtener valores numéricos de inputs, con valor por defecto
             function getInputVal(id, defaultVal = 0) {
                 const el = document.getElementById(id);
                 if (!el) return defaultVal;
@@ -620,12 +630,10 @@
                 return isNaN(val) ? defaultVal : val;
             }
 
-            // Función para copiar resultados
+            // Copiar resultados
             copiarBtn.addEventListener('click', function() {
-                const resultados = document.getElementById('resultados');
-                if (!resultados.classList.contains('visible')) return;
-
-                const texto = resultados.innerText;
+                if (!resultadosDiv.classList.contains('visible')) return;
+                const texto = resultadosDiv.innerText;
                 navigator.clipboard.writeText(texto).then(() => {
                     copyNotice.classList.add('show');
                     setTimeout(() => copyNotice.classList.remove('show'), 2000);
@@ -652,12 +660,15 @@
                 let tablaMaterialesHTML = '';
                 let explicacion = '';
 
-                // Obtener precios específicos según tipo
+                // Dosificación mortero 1:3 (cemento:arena)
+                const cementoKgPorM3 = 340; // ~8 sacos de 42.5 kg por m³ de mortero
+                const arenaM3PorM3 = 1.1;
+
+                // Variables comunes
                 let precioCementoBolsa = 0;
                 let precioArenaM3 = 0;
                 let tipoCemento = 'P250';
 
-                // Dependiendo del tipo, recolectamos datos
                 if (tipo === 'bloque') {
                     const tipoBloque = document.getElementById('tipoBloque')?.value || '10';
                     const precioBloque = getInputVal('precioBloque', 100);
@@ -666,26 +677,21 @@
                     precioArenaM3 = getInputVal('precioArena', preciosInsumos.arena);
                     const juntaCm = parseFloat(document.getElementById('junta')?.value || '1');
 
-                    // Cantidad de bloques por m²
                     const bloqueLargo = 0.40;
                     const bloqueAlto = 0.20;
                     const bloqueAreaConJunta = (bloqueLargo + juntaCm/100) * (bloqueAlto + juntaCm/100);
-                    let bloquesPorM2 = 1 / bloqueAreaConJunta;
+                    const bloquesPorM2 = 1 / bloqueAreaConJunta;
                     const cantidadBloques = Math.ceil(bloquesPorM2 * area * (1 + desperdicioPorcentaje));
                     const importeBloques = cantidadBloques * precioBloque;
                     totalMateriales += importeBloques;
                     tablaMaterialesHTML += `<tr><td>Bloques de concreto ${tipoBloque} cm</td><td>${cantidadBloques}</td><td>unidad</td><td>${precioBloque.toFixed(2)}</td><td>${importeBloques.toFixed(2)}</td></tr>`;
 
-                    // Mortero
-                    const volMuroSinDesp = area * (parseInt(tipoBloque)/100); // espesor en metros
+                    const volMuroSinDesp = area * (parseInt(tipoBloque)/100);
                     const volBloquesSinDesp = cantidadBloques * (bloqueLargo * bloqueAlto * (parseInt(tipoBloque)/100));
                     let volMortero = volMuroSinDesp - volBloquesSinDesp;
-                    if (volMortero < 0) volMortero = 0.02 * area; // mínimo
-                    volMortero *= (1 + desperdicioPorcentaje); // aplicar desperdicio
+                    if (volMortero < 0) volMortero = 0.02 * area;
+                    volMortero *= (1 + desperdicioPorcentaje);
 
-                    // Dosificación mortero 1:5 (cemento:arena) para bloques
-                    const cementoKgPorM3 = 300; // kg/m³
-                    const arenaM3PorM3 = 1.2; // m³ arena / m³ mortero
                     const cementoKg = cementoKgPorM3 * volMortero;
                     const cementoSacos = Math.ceil(cementoKg / 42.5);
                     const arenaM3 = arenaM3PorM3 * volMortero;
@@ -700,9 +706,7 @@
                     tablaMaterialesHTML += `<tr><td>Arena gruesa</td><td>${arenaM3.toFixed(2)}</td><td>m³</td><td>${precioArenaM3.toFixed(2)}</td><td>${importeArena.toFixed(2)}</td></tr>`;
                     tablaMaterialesHTML += `<tr><td>Agua</td><td>${aguaLitros}</td><td>litros</td><td>${preciosInsumos.agua.toFixed(2)}</td><td>${importeAgua.toFixed(2)}</td></tr>`;
 
-                    explicacion = `Muro de bloque de concreto de ${tipoBloque} cm de espesor. Junta de ${juntaCm} cm. Mortero 1:5 (cemento:arena).`;
-
-                    // Rendimientos mano de obra
+                    explicacion = `Muro de bloque de concreto de ${tipoBloque} cm de espesor. Junta de ${juntaCm} cm. Mortero 1:3 (cemento:arena).`;
                     var rend = rendimientos.bloque;
                 }
                 else if (tipo === 'ladrillo_hueco') {
@@ -712,10 +716,9 @@
                     precioArenaM3 = getInputVal('precioArenaH', preciosInsumos.arena);
                     const juntaCm = parseFloat(document.getElementById('juntaH')?.value || '1');
 
-                    // Ladrillo hueco (medida estándar cubana 25x12x7 asumo hueco similar? Según conversación, hueco sin medidas específicas. Usaré 25x12x7 cm como macizo pero hueco? El usuario dijo "ladrillo hueco" sin dar medidas. Asumiré dimensiones típicas de ladrillo hueco cerámico: 25x12x7 cm pero con huecos. La cantidad por m² se mantiene similar a macizo? En Cuba, ladrillo hueco suele ser 25x12x7 cm o 30x15x...? Usaré 25x12x7 cm con junta 1 cm para soga. Tomaré colocación "citara" (12 cm) como típica. Cantidad = 48 por m² con junta 1 cm (igual que macizo citara). Pero el usuario no pidió colocación, así que fijo citara.
                     const ladrilloLargo = 0.25;
                     const ladrilloAlto = 0.07;
-                    const ladrilloAncho = 0.12; // espesor en citara
+                    const ladrilloAncho = 0.12;
                     const ladrilloAreaConJunta = (ladrilloLargo + juntaCm/100) * (ladrilloAlto + juntaCm/100);
                     const ladrillosPorM2 = 1 / ladrilloAreaConJunta;
                     const cantidadLadrillos = Math.ceil(ladrillosPorM2 * area * (1 + desperdicioPorcentaje));
@@ -723,16 +726,12 @@
                     totalMateriales += importeLadrillos;
                     tablaMaterialesHTML += `<tr><td>Ladrillos huecos</td><td>${cantidadLadrillos}</td><td>unidad</td><td>${precioLadrillo.toFixed(2)}</td><td>${importeLadrillos.toFixed(2)}</td></tr>`;
 
-                    // Mortero
                     const volMuro = area * ladrilloAncho;
                     const volLadrillos = cantidadLadrillos * (ladrilloLargo * ladrilloAlto * ladrilloAncho);
                     let volMortero = volMuro - volLadrillos;
                     if (volMortero < 0) volMortero = 0.02 * area;
                     volMortero *= (1 + desperdicioPorcentaje);
 
-                    // Dosificación 1:4
-                    const cementoKgPorM3 = 350;
-                    const arenaM3PorM3 = 1.1;
                     const cementoKg = cementoKgPorM3 * volMortero;
                     const cementoSacos = Math.ceil(cementoKg / 42.5);
                     const arenaM3 = arenaM3PorM3 * volMortero;
@@ -747,7 +746,7 @@
                     tablaMaterialesHTML += `<tr><td>Arena gruesa</td><td>${arenaM3.toFixed(2)}</td><td>m³</td><td>${precioArenaM3.toFixed(2)}</td><td>${importeArena.toFixed(2)}</td></tr>`;
                     tablaMaterialesHTML += `<tr><td>Agua</td><td>${aguaLitros}</td><td>litros</td><td>${preciosInsumos.agua.toFixed(2)}</td><td>${importeAgua.toFixed(2)}</td></tr>`;
 
-                    explicacion = `Muro de ladrillo hueco asentado de citara (12 cm). Junta ${juntaCm} cm. Mortero 1:4.`;
+                    explicacion = `Muro de ladrillo hueco asentado de citara (12 cm). Junta ${juntaCm} cm. Mortero 1:3.`;
                     var rend = rendimientos.ladrillo_hueco;
                 }
                 else if (tipo === 'ladrillo_macizo') {
@@ -758,22 +757,17 @@
                     precioArenaM3 = getInputVal('precioArenaM', preciosInsumos.arena);
                     const juntaCm = parseFloat(document.getElementById('juntaM')?.value || '1');
 
-                    // Dimensiones ladrillo macizo 25x12x7 cm
                     const ladrilloLargo = 0.25;
                     const ladrilloAncho = 0.12;
                     const ladrilloAlto = 0.07;
-
                     let ladrillosPorM2, espesor;
                     if (colocacion === 'alicatado') {
-                        // muestra cara 12x7, espesor = 0.25
                         ladrillosPorM2 = 1 / ((ladrilloAncho + juntaCm/100) * (ladrilloAlto + juntaCm/100));
                         espesor = ladrilloLargo;
                     } else if (colocacion === 'citara') {
-                        // muestra cara 25x7, espesor = 0.12
                         ladrillosPorM2 = 1 / ((ladrilloLargo + juntaCm/100) * (ladrilloAlto + juntaCm/100));
                         espesor = ladrilloAncho;
-                    } else { // citaron
-                        // muestra cara 25x12, espesor = 0.07
+                    } else {
                         ladrillosPorM2 = 1 / ((ladrilloLargo + juntaCm/100) * (ladrilloAncho + juntaCm/100));
                         espesor = ladrilloAlto;
                     }
@@ -783,15 +777,12 @@
                     totalMateriales += importeLadrillos;
                     tablaMaterialesHTML += `<tr><td>Ladrillos macizos (${colocacion})</td><td>${cantidadLadrillos}</td><td>unidad</td><td>${precioLadrillo.toFixed(2)}</td><td>${importeLadrillos.toFixed(2)}</td></tr>`;
 
-                    // Mortero
                     const volMuro = area * espesor;
                     const volLadrillos = cantidadLadrillos * (ladrilloLargo * ladrilloAncho * ladrilloAlto);
                     let volMortero = volMuro - volLadrillos;
                     if (volMortero < 0) volMortero = 0.02 * area;
                     volMortero *= (1 + desperdicioPorcentaje);
 
-                    const cementoKgPorM3 = 350;
-                    const arenaM3PorM3 = 1.1;
                     const cementoKg = cementoKgPorM3 * volMortero;
                     const cementoSacos = Math.ceil(cementoKg / 42.5);
                     const arenaM3 = arenaM3PorM3 * volMortero;
@@ -806,20 +797,21 @@
                     tablaMaterialesHTML += `<tr><td>Arena gruesa</td><td>${arenaM3.toFixed(2)}</td><td>m³</td><td>${precioArenaM3.toFixed(2)}</td><td>${importeArena.toFixed(2)}</td></tr>`;
                     tablaMaterialesHTML += `<tr><td>Agua</td><td>${aguaLitros}</td><td>litros</td><td>${preciosInsumos.agua.toFixed(2)}</td><td>${importeAgua.toFixed(2)}</td></tr>`;
 
-                    explicacion = `Muro de ladrillo macizo colocado a ${colocacion}. Junta ${juntaCm} cm. Mortero 1:4.`;
+                    explicacion = `Muro de ladrillo macizo colocado a ${colocacion}. Junta ${juntaCm} cm. Mortero 1:3.`;
                     var rend = rendimientos.ladrillo_macizo[colocacion];
                 }
                 else if (tipo === 'pladur') {
                     const tipoPlancha = document.getElementById('tipoPlancha')?.value || '2.4x1.2';
                     const caras = document.getElementById('caras')?.value || 'doble';
+                    const separacionCm = getInputVal('separacionPerfiles', 40);
                     const precioPlancha = getInputVal('precioPlancha', 350);
                     const precioCinta = getInputVal('precioCinta', 5);
                     const precioPerfil = getInputVal('precioPerfil', 120);
-                    const precioMasilla = getInputVal('precioMasilla', 80); // bolsa 10 kg
+                    const precioMasilla = getInputVal('precioMasilla', 80);
                     const precioTornilloPerfil = getInputVal('precioTornilloPerfil', 2);
                     const precioTornilloPlancha = getInputVal('precioTornilloPlancha', 3);
 
-                    const planchaArea = tipoPlancha === '2.4x1.2' ? 2.88 : 2.4; // 2.0*1.2=2.4
+                    const planchaArea = tipoPlancha === '2.4x1.2' ? 2.88 : 2.4;
                     const numCaras = caras === 'doble' ? 2 : 1;
                     const areaTotalPlacas = area * numCaras;
                     const cantPlanchas = Math.ceil((areaTotalPlacas / planchaArea) * (1 + desperdicioPorcentaje));
@@ -827,9 +819,8 @@
                     totalMateriales += importePlanchas;
                     tablaMaterialesHTML += `<tr><td>Planchas de yeso</td><td>${cantPlanchas}</td><td>unidad</td><td>${precioPlancha.toFixed(2)}</td><td>${importePlanchas.toFixed(2)}</td></tr>`;
 
-                    // Perfiles
-                    const canalesU_m = 2 * largo; // piso + techo
-                    const numMontantes = Math.ceil(largo / 0.40) + 1;
+                    const canalesU_m = 2 * largo;
+                    const numMontantes = Math.ceil(largo / (separacionCm / 100)) + 1;
                     const montantesM = numMontantes * alto;
                     const totalPerfilesM = canalesU_m + montantesM;
                     const perfiles3m = Math.ceil(totalPerfilesM / 3);
@@ -837,33 +828,28 @@
                     totalMateriales += importePerfiles;
                     tablaMaterialesHTML += `<tr><td>Perfiles metálicos 3 m</td><td>${perfiles3m}</td><td>unidad</td><td>${precioPerfil.toFixed(2)}</td><td>${importePerfiles.toFixed(2)}</td></tr>`;
 
-                    // Tornillos (se usan dos tipos: para fijar perfiles entre sí y para planchas)
-                    // Simplificación: tornillos para plancha según planchas (30 por plancha)
                     const tornillosPlancha = Math.ceil(cantPlanchas * 30);
                     const importeTornPlancha = tornillosPlancha * precioTornilloPlancha;
                     totalMateriales += importeTornPlancha;
                     tablaMaterialesHTML += `<tr><td>Tornillos plancha</td><td>${tornillosPlancha}</td><td>unidad</td><td>${precioTornilloPlancha.toFixed(2)}</td><td>${importeTornPlancha.toFixed(2)}</td></tr>`;
 
-                    // Tornillos para perfiles (aprox 4 por montante)
                     const tornillosPerfil = numMontantes * 4;
                     const importeTornPerfil = tornillosPerfil * precioTornilloPerfil;
                     totalMateriales += importeTornPerfil;
                     tablaMaterialesHTML += `<tr><td>Tornillos perfil</td><td>${tornillosPerfil}</td><td>unidad</td><td>${precioTornilloPerfil.toFixed(2)}</td><td>${importeTornPerfil.toFixed(2)}</td></tr>`;
 
-                    // Cinta mata-juntas (2 m por m² de muro para doble cara, o 1 m para una cara)
                     const cintaMetros = Math.ceil(area * (caras === 'doble' ? 2 : 1) * (1 + desperdicioPorcentaje));
                     const importeCinta = cintaMetros * precioCinta;
                     totalMateriales += importeCinta;
                     tablaMaterialesHTML += `<tr><td>Cinta mata-juntas</td><td>${cintaMetros}</td><td>m</td><td>${precioCinta.toFixed(2)}</td><td>${importeCinta.toFixed(2)}</td></tr>`;
 
-                    // Masilla (1 kg por m² de muro por cara)
                     const masillaKg = Math.ceil(area * numCaras * (1 + desperdicioPorcentaje));
                     const masillaBolsas = Math.ceil(masillaKg / 10);
                     const importeMasilla = masillaBolsas * precioMasilla;
                     totalMateriales += importeMasilla;
                     tablaMaterialesHTML += `<tr><td>Masilla (bolsa 10 kg)</td><td>${masillaBolsas}</td><td>bolsa</td><td>${precioMasilla.toFixed(2)}</td><td>${importeMasilla.toFixed(2)}</td></tr>`;
 
-                    explicacion = `Muro de pladur con planchas de ${tipoPlancha.replace('x','×')} m, a ${caras} cara(s). Incluye estructura metálica cada 40 cm.`;
+                    explicacion = `Muro de pladur con planchas de ${tipoPlancha.replace('x','×')} m, a ${caras} cara(s). Perfiles cada ${separacionCm} cm.`;
                     var rend = rendimientos.pladur;
                 }
 
