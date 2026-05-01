@@ -17,7 +17,7 @@
         .row { display:flex; gap:16px; }
         .row .form-group { flex:1; }
         .btn { width:100%; padding:14px; background:#1d1d1f; color:#fff; border:none; border-radius:14px; margin-top:8px; cursor:pointer; }
-        .results { margin-top:28px; padding:28px; background:#f9f9fb; border-radius:20px; display:none; }
+        .results { margin-top:28px; padding:28px; background:#f9f9fb; border-radius:20px; display:none; overflow-x:auto; }
         .results.visible { display:block; }
         .tabla-materiales { width:100%; border-collapse:collapse; font-size:0.75rem; margin-bottom:20px; }
         .tabla-materiales th { text-align:left; color:#86868b; padding:6px 4px; border-bottom:1px solid #d2d2d7; }
@@ -41,9 +41,15 @@
     <button class="btn" id="calcularBtn">Calcular</button>
     <div class="results" id="resultados">
         <h2>Resultado</h2>
-        <table class="tabla-materiales"><thead><tr><th>Material</th><th>Cantidad</th><th>Unidad</th><th>Precio unit.</th><th>Importe</th></tr></thead><tbody></tbody></table>
+        <table class="tabla-materiales" id="tablaMateriales">
+            <thead><tr><th>Material</th><th>Cantidad</th><th>Unidad</th><th>Precio unit.</th><th>Importe</th></tr></thead>
+            <tbody></tbody>
+        </table>
         <p class="totales"><strong>Total Materiales:</strong> <span id="totalMateriales"></span> CUP</p>
-        <table class="tabla-materiales"><thead><tr><th>Mano de obra</th><th>Hombres</th><th>Tiempo</th><th>Precio</th></tr></thead><tbody id="tablaManoObra"></tbody></table>
+        <table class="tabla-materiales">
+            <thead><tr><th>Mano de obra</th><th>Hombres</th><th>Tiempo</th><th>Precio</th></tr></thead>
+            <tbody id="tablaManoObra"></tbody>
+        </table>
         <p class="totales"><strong>Total Mano de Obra:</strong> <span id="totalManoObra"></span> CUP</p>
         <p style="font-size:1.1rem;"><strong>Gran Total:</strong> <span id="granTotal"></span> CUP</p>
     </div>
@@ -93,6 +99,7 @@
         document.getElementById('tablaManoObra').innerHTML = `<tr><td>${manoTipo==='precons'?'Precons III':manoTipo==='mipyme'?'MiPyme':'Particular'}</td><td>2</td><td>${Math.ceil(area/6)} día(s)</td><td>${importeMO.toFixed(2)} CUP</td></tr>`;
         document.getElementById('totalManoObra').textContent = importeMO.toFixed(2);
         document.getElementById('granTotal').textContent = (totalMat+importeMO).toFixed(2);
+        document.getElementById('explicacion')?.textContent = `Piso tipo ${tipo}.`;
         document.getElementById('resultados').classList.add('visible');
     });
 })();
