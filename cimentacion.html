@@ -1,163 +1,93 @@
 <!DOCTYPE html>
 <html lang="es">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Cálculo de Cimentación</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-body{font-family:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;background:#f5f5f7;color:#1d1d1f;min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:20px;}
-.container{max-width:800px;width:100%;background:#fff;border-radius:24px;padding:36px 28px;box-shadow:0 8px 30px rgba(0,0,0,0.04);margin:20px 0;}
-.back-link{display:inline-block;margin-bottom:24px;color:#86868b;text-decoration:none;}
-.back-link:hover{color:#1d1d1f;}
-h1{font-size:1.8rem;font-weight:600;margin-bottom:8px;}
-.subtitle{font-size:0.95rem;color:#86868b;margin-bottom:32px;}
-.form-group{margin-bottom:20px;}
-label{display:block;font-weight:500;font-size:0.9rem;margin-bottom:6px;}
-select,input{width:100%;padding:12px 16px;border:1px solid #d2d2d7;border-radius:12px;font-size:0.95rem;background:#f9f9fb;}
-.row{display:flex;gap:16px;flex-wrap:wrap;}
-.row .form-group{flex:1;min-width:140px;}
-.btn{width:100%;padding:14px;background:#1d1d1f;color:#fff;border:none;border-radius:14px;font-size:1rem;cursor:pointer;margin-top:8px;}
-.btn-copy{background:transparent;color:#1d1d1f;border:1px solid #d2d2d7;margin-top:12px;}
-.results{margin-top:36px;padding:28px;background:#f9f9fb;border-radius:20px;display:none;overflow-x:auto;}
-.results.visible{display:block;}
-.tabla-materiales{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:0.75rem;}
-.tabla-materiales th{text-align:left;font-weight:500;color:#86868b;padding:6px 4px;border-bottom:1px solid #d2d2d7;}
-.tabla-materiales td{padding:6px 4px;border-bottom:1px solid #f0f0f2;}
-.totales{font-weight:600;margin-bottom:12px;}
-.explanation{margin-top:24px;font-size:0.8rem;color:#86868b;line-height:1.5;border-top:1px solid #e5e5ea;padding-top:16px;}
-.copy-notice{display:inline-block;margin-left:8px;font-size:0.8rem;color:#34c759;opacity:0;}
-.copy-notice.show{opacity:1;}
-</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo de Cimentación</title>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter', sans-serif; background:#f5f5f7; padding:20px; display:flex; justify-content:center; }
+        .container { max-width:800px; width:100%; background:#fff; border-radius:24px; padding:36px 28px; }
+        .back-link { color:#86868b; text-decoration:none; margin-bottom:24px; display:block; }
+        h1 { font-size:1.8rem; font-weight:600; }
+        .form-group { margin-bottom:20px; }
+        label { font-weight:500; font-size:0.9rem; display:block; margin-bottom:6px; }
+        select, input { width:100%; padding:12px; border:1px solid #d2d2d7; border-radius:12px; }
+        .row { display:flex; gap:16px; }
+        .row .form-group { flex:1; }
+        .btn { width:100%; padding:14px; background:#1d1d1f; color:#fff; border:none; border-radius:14px; cursor:pointer; margin-top:8px; }
+        .results { margin-top:28px; padding:28px; background:#f9f9fb; border-radius:20px; display:none; }
+        .results.visible { display:block; }
+        .tabla-materiales { width:100%; border-collapse:collapse; font-size:0.75rem; margin-bottom:20px; }
+        .tabla-materiales th { text-align:left; color:#86868b; padding:6px 4px; border-bottom:1px solid #d2d2d7; }
+        .tabla-materiales td { padding:6px 4px; border-bottom:1px solid #f0f0f2; }
+        .totales { font-weight:600; }
+    </style>
 </head>
 <body>
 <div class="container">
-<a href="index.html" class="back-link">← Volver al inicio</a>
-<h1>Cálculo de Cimentación</h1>
-<p class="subtitle">Zapatas, cimiento corrido y losa de fundación</p>
-
-<div class="form-group"><label for="tipoCimentacion">Tipo</label>
-    <select id="tipoCimentacion">
-        <option value="">-- Seleccione --</option>
-        <option value="zapata">Zapata aislada</option>
-        <option value="corrido">Cimiento corrido</option>
-        <option value="platea">Losa de fundación</option>
-    </select>
-</div>
-<div id="dimensiones"></div>
-
-<div class="row">
-    <div class="form-group"><label>Tipo cemento</label><select id="tipoCemento"><option>P250</option><option>P350</option></select></div>
-    <div class="form-group"><label>Precio bolsa 42.5kg</label><input type="number" id="precioCemento" placeholder="380"></div>
-</div>
-<div class="row">
-    <div class="form-group"><label>Precio arena</label><input type="number" id="precioArena" placeholder="280"></div>
-    <div class="form-group"><label>Precio grava</label><input type="number" id="precioGrava" placeholder="300"></div>
-</div>
-<div class="row">
-    <div class="form-group"><label>Precio acero</label><input type="number" id="precioAcero" placeholder="22"></div>
-    <div class="form-group"><label>Acero (kg/m³)</label><input type="number" id="cuantiaAcero" value="80" placeholder="80"></div>
-</div>
-<div class="form-group"><label>Desperdicio (%)</label>
-    <select id="desperdicio"><option>0</option><option selected>3</option><option>5</option><option>7</option><option>10</option></select>
-</div>
-<div class="form-group"><label>Mano de obra</label>
-    <select id="manoObra"><option value="">--</option><option value="precons">Precons III</option><option value="mipyme">MiPyme</option><option value="particular">Particular</option></select>
-</div>
-<button class="btn" id="calcularBtn">Calcular</button>
-
-<div class="results" id="resultados">
-    <h2>Resultado</h2>
-    <table class="tabla-materiales"><thead><tr><th>Material</th><th>Cantidad</th><th>Unidad</th><th>Precio unit.</th><th>Importe</th></tr></thead><tbody></tbody></table>
-    <p class="totales"><strong>Total Materiales:</strong> <span id="totalMateriales"></span> CUP</p>
-    <table class="tabla-materiales"><thead><tr><th>Mano de obra</th><th>Hombres</th><th>Tiempo</th><th>Precio</th></tr></thead><tbody id="tablaManoObra"></tbody></table>
-    <p class="totales"><strong>Total Mano de Obra:</strong> <span id="totalManoObra"></span> CUP</p>
-    <p style="font-size:1.1rem;" class="totales"><strong>Gran Total:</strong> <span id="granTotal"></span> CUP</p>
-    <button class="btn btn-copy" id="copiarBtn">📋 Copiar <span class="copy-notice" id="copyNotice">¡Copiado!</span></button>
-    <div class="explanation" id="explicacion"></div>
-</div>
+    <a href="index.html" class="back-link">← Volver al inicio</a>
+    <h1>Cálculo de Cimentación</h1>
+    <div class="form-group"><label>Tipo</label><select id="tipoCimentacion"><option value="">--</option><option value="zapata">Zapata aislada</option><option value="corrido">Cimiento corrido</option><option value="platea">Losa de fundación</option></select></div>
+    <div id="dimensiones"></div>
+    <div class="row">
+        <div class="form-group"><label>Cemento</label><select id="tipoCemento"><option>P250</option><option>P350</option></select></div>
+        <div class="form-group"><label>Precio cemento</label><input type="number" id="precioCemento" placeholder="380"></div>
+    </div>
+    <div class="row">
+        <div class="form-group"><label>Arena (m³)</label><input type="number" id="precioArena" placeholder="280"></div>
+        <div class="form-group"><label>Grava (m³)</label><input type="number" id="precioGrava" placeholder="300"></div>
+    </div>
+    <div class="row">
+        <div class="form-group"><label>Acero (kg)</label><input type="number" id="precioAcero" placeholder="22"></div>
+        <div class="form-group"><label>Acero kg/m³</label><input type="number" id="cuantiaAcero" value="80"></div>
+    </div>
+    <div class="form-group"><label>Desperdicio (%)</label><select id="desperdicio"><option>0</option><option selected>3</option><option>5</option><option>7</option><option>10</option></select></div>
+    <div class="form-group"><label>Mano de obra</label><select id="manoObra"><option value="">--</option><option value="precons">Precons III</option><option value="mipyme">MiPyme</option><option value="particular">Particular</option></select></div>
+    <button class="btn" id="calcularBtn">Calcular</button>
+    <div class="results" id="resultados">
+        <h2>Resultado</h2>
+        <table class="tabla-materiales"><thead><tr><th>Material</th><th>Cantidad</th><th>Unidad</th><th>Precio unit.</th><th>Importe</th></tr></thead><tbody></tbody></table>
+        <p class="totales"><strong>Total Materiales:</strong> <span id="totalMateriales"></span> CUP</p>
+        <table class="tabla-materiales"><thead><tr><th>Mano de obra</th><th>Hombres</th><th>Tiempo</th><th>Precio</th></tr></thead><tbody id="tablaManoObra"></tbody></table>
+        <p class="totales"><strong>Total Mano de Obra:</strong> <span id="totalManoObra"></span> CUP</p>
+        <p style="font-size:1.1rem;"><strong>Gran Total:</strong> <span id="granTotal"></span> CUP</p>
+    </div>
 </div>
 <script>
 (function(){
     const tipoCim = document.getElementById('tipoCimentacion');
-    const dimDiv = document.getElementById('dimensiones');
-
-    function getVal(id,def=0){
-        const el = document.getElementById(id);
-        if(!el) return def;
-        const v = parseFloat(el.value);
-        return isNaN(v) ? def : v;
-    }
-
-    function actualizarDim(){
-        const t = tipoCim.value;
-        let html = '';
-        if(t==='zapata'){
-            html = `<div class="row"><div class="form-group"><label>Lado X (m)</label><input type="number" id="ladoX" placeholder="1.0" step="0.01"></div><div class="form-group"><label>Lado Y (m)</label><input type="number" id="ladoY" placeholder="1.0" step="0.01"></div></div>
-                    <div class="form-group"><label>Peralte (cm)</label><input type="number" id="peralte" placeholder="30" step="1"></div>
-                    <div class="form-group"><label>Cantidad</label><input type="number" id="cantidad" value="1" step="1"></div>`;
-        } else if(t==='corrido'){
-            html = `<div class="row"><div class="form-group"><label>Base (m)</label><input type="number" id="base" placeholder="0.4" step="0.01"></div><div class="form-group"><label>Altura (m)</label><input type="number" id="altura" placeholder="0.5" step="0.01"></div></div>
-                    <div class="form-group"><label>Longitud total (m)</label><input type="number" id="longitud" placeholder="20" step="0.01"></div>`;
-        } else if(t==='platea'){
-            html = `<div class="row"><div class="form-group"><label>Largo (m)</label><input type="number" id="largo" placeholder="10" step="0.01"></div><div class="form-group"><label>Ancho (m)</label><input type="number" id="ancho" placeholder="8" step="0.01"></div></div>
-                    <div class="form-group"><label>Espesor (cm)</label><input type="number" id="espesor" placeholder="20" step="1"></div>`;
-        }
-        dimDiv.innerHTML = html;
-    }
-    tipoCim.addEventListener('change', actualizarDim);
-    actualizarDim();
-
-    document.getElementById('calcularBtn').addEventListener('click', ()=>{
+    const dimsDiv = document.getElementById('dimensiones');
+    const calcBtn = document.getElementById('calcularBtn');
+    function getVal(id,def=0){ const el=document.getElementById(id); if(!el) return def; const v=parseFloat(el.value); return isNaN(v)?def:v; }
+    tipoCim.addEventListener('change', ()=>{
+        if(tipoCim.value==='zapata') dimsDiv.innerHTML = `<div class="row"><div class="form-group"><label>Lado X (m)</label><input type="number" id="ladoX" value="1.0"></div><div class="form-group"><label>Lado Y (m)</label><input type="number" id="ladoY" value="1.0"></div></div><div class="form-group"><label>Peralte (cm)</label><input type="number" id="peralte" value="30"></div><div class="form-group"><label>Cantidad</label><input type="number" id="cantidad" value="1"></div>`;
+        else if(tipoCim.value==='corrido') dimsDiv.innerHTML = `<div class="row"><div class="form-group"><label>Base (m)</label><input type="number" id="base" value="0.4"></div><div class="form-group"><label>Altura (m)</label><input type="number" id="altura" value="0.5"></div></div><div class="form-group"><label>Longitud (m)</label><input type="number" id="longitud" value="20"></div>`;
+        else if(tipoCim.value==='platea') dimsDiv.innerHTML = `<div class="row"><div class="form-group"><label>Largo (m)</label><input type="number" id="largo" value="10"></div><div class="form-group"><label>Ancho (m)</label><input type="number" id="ancho" value="8"></div></div><div class="form-group"><label>Espesor (cm)</label><input type="number" id="espesor" value="20"></div>`;
+        else dimsDiv.innerHTML = '';
+    });
+    calcBtn.addEventListener('click', ()=>{
         const tipo = tipoCim.value;
         const manoTipo = document.getElementById('manoObra').value;
-        if(!tipo || !manoTipo){ alert('Complete datos'); return; }
-
-        let volConcreto = 0;
-        if(tipo==='zapata'){
-            const x = getVal('ladoX',1), y = getVal('ladoY',1), p = getVal('peralte',30)/100, cant = getVal('cantidad',1);
-            volConcreto = x*y*p*cant;
-        } else if(tipo==='corrido'){
-            const b = getVal('base',0.4), h = getVal('altura',0.5), l = getVal('longitud',20);
-            volConcreto = b*h*l;
-        } else if(tipo==='platea'){
-            const lar = getVal('largo',10), an = getVal('ancho',8), esp = getVal('espesor',20)/100;
-            volConcreto = lar*an*esp;
-        }
-
-        const desperdicio = parseFloat(document.getElementById('desperdicio').value)/100;
-        const precioCemento = getVal('precioCemento',380);
-        const precioArena = getVal('precioArena',280);
-        const precioGrava = getVal('precioGrava',300);
-        const precioAcero = getVal('precioAcero',22);
+        if(!tipo || !manoTipo) return alert('Seleccione tipo y mano de obra');
+        let vol = 0;
+        if(tipo==='zapata') vol = getVal('ladoX',1)*getVal('ladoY',1)*(getVal('peralte',30)/100)*getVal('cantidad',1);
+        else if(tipo==='corrido') vol = getVal('base',0.4)*getVal('altura',0.5)*getVal('longitud',20);
+        else if(tipo==='platea') vol = getVal('largo',10)*getVal('ancho',8)*(getVal('espesor',20)/100);
+        const desp = parseFloat(document.getElementById('desperdicio').value)/100;
+        const volDesp = vol*(1+desp);
+        const pc = getVal('precioCemento',380), pa = getVal('precioArena',280), pg = getVal('precioGrava',300), pac = getVal('precioAcero',22);
         const cuantia = getVal('cuantiaAcero',80);
-        const volDesp = volConcreto * (1+desperdicio);
-
-        const cementoKg = 350 * volDesp;
-        const cementoSacos = Math.ceil(cementoKg/42.5);
-        const arenaM3 = 0.56 * volDesp;
-        const gravaM3 = 0.84 * volDesp;
-        const aguaLitros = Math.ceil(180 * volDesp);
-        const aceroKg = cuantia * volDesp;
-
-        const impCem = cementoSacos*precioCemento;
-        const impAre = arenaM3*precioArena;
-        const impGra = gravaM3*precioGrava;
-        const impAgu = aguaLitros*0.10;
-        const impAce = aceroKg*precioAcero;
+        const cemento = Math.ceil(350*volDesp/42.5), arena = 0.56*volDesp, grava = 0.84*volDesp, agua = Math.ceil(180*volDesp), acero = cuantia*volDesp;
+        const impCem = cemento*pc, impAre = arena*pa, impGra = grava*pg, impAgu = agua*0.1, impAce = acero*pac;
         const totalMat = impCem+impAre+impGra+impAgu+impAce;
-
-        let tabla = `<tr><td>Cemento</td><td>${cementoSacos}</td><td>sacos</td><td>${precioCemento.toFixed(2)}</td><td>${impCem.toFixed(2)}</td></tr>
-        <tr><td>Arena</td><td>${arenaM3.toFixed(2)}</td><td>m³</td><td>${precioArena.toFixed(2)}</td><td>${impAre.toFixed(2)}</td></tr>
-        <tr><td>Grava</td><td>${gravaM3.toFixed(2)}</td><td>m³</td><td>${precioGrava.toFixed(2)}</td><td>${impGra.toFixed(2)}</td></tr>
-        <tr><td>Agua</td><td>${aguaLitros}</td><td>litros</td><td>0.10</td><td>${impAgu.toFixed(2)}</td></tr>
-        <tr><td>Acero</td><td>${aceroKg.toFixed(1)}</td><td>kg</td><td>${precioAcero.toFixed(2)}</td><td>${impAce.toFixed(2)}</td></tr>`;
-        document.querySelector('#tablaMateriales tbody').innerHTML = tabla;
+        document.querySelector('#tablaMateriales tbody').innerHTML = `<tr><td>Cemento</td><td>${cemento}</td><td>sacos</td><td>${pc.toFixed(2)}</td><td>${impCem.toFixed(2)}</td></tr><tr><td>Arena</td><td>${arena.toFixed(2)}</td><td>m³</td><td>${pa.toFixed(2)}</td><td>${impAre.toFixed(2)}</td></tr><tr><td>Grava</td><td>${grava.toFixed(2)}</td><td>m³</td><td>${pg.toFixed(2)}</td><td>${impGra.toFixed(2)}</td></tr><tr><td>Agua</td><td>${agua}</td><td>litros</td><td>0.10</td><td>${impAgu.toFixed(2)}</td></tr><tr><td>Acero</td><td>${acero.toFixed(1)}</td><td>kg</td><td>${pac.toFixed(2)}</td><td>${impAce.toFixed(2)}</td></tr>`;
         document.getElementById('totalMateriales').textContent = totalMat.toFixed(2);
-
         const preciosMO = { precons:350, mipyme:280, particular:450 };
-        const importeMO = preciosMO[manoTipo] * volConcreto;
-        document.getElementById('tablaManoObra').innerHTML = `<tr><td>${manoTipo==='precons'?'Precons III':manoTipo==='mipyme'?'MiPyme':'Particular'}</td><td>3 (2 of. + 1 ayud.)</td><td>${Math.ceil(volConcreto*2)} día(s)</td><td>${importeMO.toFixed(2)} CUP</td></tr>`;
+        const importeMO = preciosMO[manoTipo]*vol;
+        document.getElementById('tablaManoObra').innerHTML = `<tr><td>${manoTipo==='precons'?'Precons III':manoTipo==='mipyme'?'MiPyme':'Particular'}</td><td>3</td><td>${Math.ceil(vol*2)} día(s)</td><td>${importeMO.toFixed(2)} CUP</td></tr>`;
         document.getElementById('totalManoObra').textContent = importeMO.toFixed(2);
         document.getElementById('granTotal').textContent = (totalMat+importeMO).toFixed(2);
-        document.getElementById('explicacion').textContent = `Cimentación tipo ${tipo}. Concreto 1:3:3.`;
         document.getElementById('resultados').classList.add('visible');
     });
 })();
