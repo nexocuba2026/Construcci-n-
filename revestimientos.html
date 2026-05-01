@@ -5,136 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cálculo de Revestimientos</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: #f5f5f7; color: #1d1d1f; min-height: 100vh;
-            display: flex; justify-content: center; align-items: flex-start; padding: 20px;
-        }
-        .container {
-            max-width: 800px; width: 100%; background: #ffffff; border-radius: 24px;
-            padding: 36px 28px; box-shadow: 0 8px 30px rgba(0,0,0,0.04), 0 2px 6px rgba(0,0,0,0.03);
-            margin: 20px 0;
-        }
-        .back-link { display: inline-block; margin-bottom: 24px; color: #86868b; text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
-        .back-link:hover { color: #1d1d1f; }
-        h1 { font-size: 1.8rem; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 8px; }
-        .subtitle { font-size: 0.95rem; color: #86868b; margin-bottom: 32px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 500; font-size: 0.9rem; margin-bottom: 6px; color: #1d1d1f; }
-        select, input {
-            width: 100%; padding: 12px 16px; border: 1px solid #d2d2d7; border-radius: 12px;
-            font-size: 0.95rem; font-family: inherit; background: #f9f9fb; transition: border-color 0.2s, box-shadow 0.2s;
-            appearance: none; -webkit-appearance: none;
-        }
-        select {
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2386868b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat; background-position: right 12px center; background-size: 18px;
-        }
-        input:focus, select:focus { outline: none; border-color: #86868b; box-shadow: 0 0 0 3px rgba(0,0,0,0.04); }
-        .row { display: flex; gap: 16px; flex-wrap: wrap; }
-        .row .form-group { flex: 1; min-width: 140px; }
-        .btn {
-            display: block; width: 100%; padding: 14px; background: #1d1d1f; color: #ffffff;
-            border: none; border-radius: 14px; font-size: 1rem; font-weight: 500; cursor: pointer;
-            transition: background 0.2s, transform 0.1s; margin-top: 8px;
-        }
-        .btn:hover { background: #2d2d2f; }
-        .btn:active { transform: scale(0.98); }
-        .btn-copy { background: transparent; color: #1d1d1f; border: 1px solid #d2d2d7; margin-top: 12px; }
-        .btn-copy:hover { background: #f5f5f7; border-color: #86868b; }
-        .results {
-            margin-top: 36px; padding: 28px; background: #f9f9fb; border-radius: 20px;
-            display: none; overflow-x: auto;
-        }
-        .results.visible { display: block; }
-        .results h2 { font-size: 1.3rem; font-weight: 600; margin-bottom: 20px; }
-        .tabla-materiales {
-            width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.75rem;
-            table-layout: auto; word-break: break-word;
-        }
-        .tabla-materiales th {
-            text-align: left; font-weight: 500; color: #86868b; padding: 6px 4px;
-            border-bottom: 1px solid #d2d2d7; white-space: nowrap;
-        }
-        .tabla-materiales td { padding: 6px 4px; border-bottom: 1px solid #f0f0f2; vertical-align: top; }
-        .tabla-materiales tr:last-child td { border-bottom: none; }
-        .totales { font-weight: 600; margin-bottom: 12px; }
-        .explanation { margin-top: 24px; font-size: 0.8rem; color: #86868b; line-height: 1.5; border-top: 1px solid #e5e5ea; padding-top: 16px; }
-        .sketch { margin: 24px 0; padding: 16px; background: #f9f9fb; border-radius: 12px; text-align: center; display: none; }
-        .sketch.visible { display: block; }
-        .sketch svg { max-width: 100%; height: auto; }
-        .copy-notice { display: inline-block; margin-left: 8px; font-size: 0.8rem; color: #34c759; opacity: 0; transition: opacity 0.3s; }
-        .copy-notice.show { opacity: 1; }
-        @media (max-width: 480px) { .container { padding: 24px 18px; } .row { flex-direction: column; gap: 0; } }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter', sans-serif; background:#f5f5f7; color:#1d1d1f; padding:20px; display:flex; justify-content:center; align-items:flex-start; }
+        .container { max-width:800px; width:100%; background:#fff; border-radius:24px; padding:36px 28px; box-shadow:0 8px 30px rgba(0,0,0,0.04); }
+        .back-link { color:#86868b; text-decoration:none; font-size:0.9rem; display:block; margin-bottom:24px; }
+        h1 { font-size:1.8rem; font-weight:600; margin-bottom:8px; }
+        .subtitle { color:#86868b; margin-bottom:32px; }
+        .form-group { margin-bottom:20px; }
+        label { font-weight:500; font-size:0.9rem; display:block; margin-bottom:6px; }
+        select, input { width:100%; padding:12px 16px; border:1px solid #d2d2d7; border-radius:12px; font-size:0.95rem; background:#f9f9fb; }
+        .row { display:flex; gap:16px; flex-wrap:wrap; }
+        .row .form-group { flex:1; min-width:140px; }
+        .btn { width:100%; padding:14px; background:#1d1d1f; color:#fff; border:none; border-radius:14px; font-size:1rem; cursor:pointer; margin-top:8px; }
+        .results { margin-top:36px; padding:28px; background:#f9f9fb; border-radius:20px; display:none; overflow-x:auto; }
+        .results.visible { display:block; }
+        .tabla-materiales { width:100%; border-collapse:collapse; margin-bottom:20px; font-size:0.75rem; }
+        .tabla-materiales th { text-align:left; color:#86868b; padding:6px 4px; border-bottom:1px solid #d2d2d7; }
+        .tabla-materiales td { padding:6px 4px; border-bottom:1px solid #f0f0f2; }
+        .totales { font-weight:600; }
+        .explanation { margin-top:24px; font-size:0.8rem; color:#86868b; border-top:1px solid #e5e5ea; padding-top:16px; }
     </style>
 </head>
 <body>
 <div class="container">
     <a href="index.html" class="back-link">← Volver al inicio</a>
     <h1>Cálculo de Revestimientos</h1>
-    <p class="subtitle">Configure los parámetros para revoques gruesos y finos</p>
+    <p class="subtitle">Repello grueso y revoque fino</p>
 
     <div class="form-group">
-        <label for="tipoRevestimiento">Tipo de revestimiento</label>
+        <label for="tipoRevestimiento">Tipo</label>
         <select id="tipoRevestimiento">
             <option value="">-- Seleccione --</option>
-            <option value="grueso">Repello grueso (zarpeo)</option>
-            <option value="fino">Revoque fino / enlucido</option>
+            <option value="grueso">Repello grueso</option>
+            <option value="fino">Revoque fino</option>
         </select>
     </div>
-
     <div class="row">
-        <div class="form-group">
-            <label for="largo">Largo (m)</label>
-            <input type="number" id="largo" placeholder="Ej. 4.0" step="0.01" min="0">
-        </div>
-        <div class="form-group">
-            <label for="alto">Alto (m)</label>
-            <input type="number" id="alto" placeholder="Ej. 2.5" step="0.01" min="0">
-        </div>
+        <div class="form-group"><label>Largo (m)</label><input type="number" id="largo" placeholder="4.0" step="0.01"></div>
+        <div class="form-group"><label>Alto (m)</label><input type="number" id="alto" placeholder="2.5" step="0.01"></div>
     </div>
-
     <div class="row">
-        <div class="form-group">
-            <label for="tipoCemento">Tipo de cemento</label>
-            <select id="tipoCemento"><option value="P250">P-250</option><option value="P350">P-350</option></select>
-        </div>
-        <div class="form-group">
-            <label for="precioCemento">Precio bolsa cemento 42.5 kg (CUP)</label>
-            <input type="number" id="precioCemento" placeholder="Precio bolsa" step="0.01" min="0">
-        </div>
+        <div class="form-group"><label>Tipo cemento</label><select id="tipoCemento"><option value="P250">P-250</option><option value="P350">P-350</option></select></div>
+        <div class="form-group"><label>Precio bolsa 42.5 kg</label><input type="number" id="precioCemento" placeholder="380"></div>
     </div>
-
     <div class="row">
-        <div class="form-group">
-            <label for="precioArena">Precio arena (CUP/m³)</label>
-            <input type="number" id="precioArena" placeholder="Ej. 280" step="0.01" min="0">
-        </div>
-        <div class="form-group">
-            <label for="espesor">Espesor (cm)</label>
-            <input type="number" id="espesor" placeholder="Ej. 1.5" step="0.1" min="0.5" value="1.5">
-        </div>
+        <div class="form-group"><label>Precio arena (CUP/m³)</label><input type="number" id="precioArena" placeholder="280"></div>
+        <div class="form-group"><label>Espesor (cm)</label><input type="number" id="espesor" value="1.5" step="0.1"></div>
     </div>
-
-    <div class="form-group">
-        <label for="desperdicio">Desperdicio (%)</label>
-        <select id="desperdicio">
-            <option value="0">0%</option><option value="3" selected>3%</option><option value="5">5%</option><option value="7">7%</option><option value="10">10%</option>
-        </select>
+    <div class="form-group"><label>Desperdicio (%)</label>
+        <select id="desperdicio"><option value="0">0%</option><option value="3" selected>3%</option><option value="5">5%</option><option value="7">7%</option><option value="10">10%</option></select>
     </div>
-
-    <div class="form-group">
-        <label for="manoObra">Tipo de mano de obra</label>
-        <select id="manoObra">
-            <option value="">-- Seleccione --</option>
-            <option value="precons">Precons III</option><option value="mipyme">MiPyme</option><option value="particular">Particular</option>
-        </select>
+    <div class="form-group"><label>Mano de obra</label>
+        <select id="manoObra"><option value="">--</option><option value="precons">Precons III</option><option value="mipyme">MiPyme</option><option value="particular">Particular</option></select>
     </div>
-
     <button class="btn" id="calcularBtn">Calcular</button>
-
-    <div class="sketch" id="sketchContainer"></div>
 
     <div class="results" id="resultados">
         <h2>Resultado</h2>
@@ -142,100 +66,41 @@
         <p class="totales"><strong>Total Materiales:</strong> <span id="totalMateriales"></span> CUP</p>
         <table class="tabla-materiales"><thead><tr><th>Mano de obra</th><th>Hombres</th><th>Tiempo</th><th>Precio</th></tr></thead><tbody id="tablaManoObra"></tbody></table>
         <p class="totales"><strong>Total Mano de Obra:</strong> <span id="totalManoObra"></span> CUP</p>
-        <p style="font-size:1.1rem; margin-top:12px;" class="totales"><strong>Gran Total:</strong> <span id="granTotal"></span> CUP</p>
-        <button class="btn btn-copy" id="copiarBtn">📋 Copiar resultados <span class="copy-notice" id="copyNotice">¡Copiado!</span></button>
+        <p style="font-size:1.1rem;" class="totales"><strong>Gran Total:</strong> <span id="granTotal"></span> CUP</p>
         <div class="explanation" id="explicacion"></div>
     </div>
 </div>
 <script>
 (function(){
-    const tipoRev = document.getElementById('tipoRevestimiento');
-    const largoI = document.getElementById('largo');
-    const altoI = document.getElementById('alto');
-    const espesorI = document.getElementById('espesor');
-    const desperdicioS = document.getElementById('desperdicio');
-    const manoObraS = document.getElementById('manoObra');
     const calcBtn = document.getElementById('calcularBtn');
-    const resDiv = document.getElementById('resultados');
-    const copiarBtn = document.getElementById('copiarBtn');
-    const copyNotice = document.getElementById('copyNotice');
-
-    const preciosDef = { cementoP250:350, cementoP350:380, arena:280, agua:0.10 };
-    const manodeObraPrecio = { precons:250, mipyme:200, particular:320 }; // CUP/m²
-
-    const rendimientos = {
-        grueso: { cemento:350, arena:1.2, horas:0.45, oficiales:1, ayudantes:1 },
-        fino:   { cemento:300, arena:1.0, cal:100, horas:0.35, oficiales:1, ayudantes:0.5 }
-    };
-
-    function getVal(id, def=0){
-        const el = document.getElementById(id);
-        if(!el) return def;
-        const v = parseFloat(el.value);
-        return isNaN(v) ? def : v;
-    }
-
-    copiarBtn.addEventListener('click', ()=>{
-        if(!resDiv.classList.contains('visible')) return;
-        navigator.clipboard.writeText(resDiv.innerText).then(()=>{
-            copyNotice.classList.add('show');
-            setTimeout(()=>copyNotice.classList.remove('show'),2000);
-        }).catch(()=>alert('No se pudo copiar'));
-    });
-
+    function getVal(id,def=0){ const el=document.getElementById(id); if(!el) return def; const v=parseFloat(el.value); return isNaN(v)?def:v; }
     calcBtn.addEventListener('click', ()=>{
-        const tipo = tipoRev.value;
-        const largo = getVal('largo');
-        const alto = getVal('alto');
-        const espesorCm = getVal('espesor', 1.5);
-        const desperdicio = parseFloat(desperdicioS.value)/100;
-        const manoTipo = manoObraS.value;
-
-        if(!tipo || isNaN(largo) || isNaN(alto) || largo<=0 || alto<=0 || !manoTipo){
-            alert('Complete todos los campos obligatorios.');
-            return;
-        }
-
+        const tipo = document.getElementById('tipoRevestimiento').value;
+        const largo = getVal('largo'), alto = getVal('alto');
+        const espesor = getVal('espesor',1.5)/100;
+        const desperdicio = parseFloat(document.getElementById('desperdicio').value)/100;
+        const manoTipo = document.getElementById('manoObra').value;
+        if(!tipo || isNaN(largo) || isNaN(alto) || largo<=0 || alto<=0 || !manoTipo){ alert('Complete los campos obligatorios.'); return; }
         const area = largo * alto;
-        const volTotal = area * (espesorCm/100) * (1+desperdicio);
+        const volTotal = area * espesor * (1+desperdicio);
         const cementoTipo = document.getElementById('tipoCemento').value;
-        const precioCemento = getVal('precioCemento', cementoTipo==='P250'?preciosDef.cementoP250:preciosDef.cementoP350);
-        const precioArena = getVal('precioArena', preciosDef.arena);
-        const datos = rendimientos[tipo];
-
-        const cementoKg = datos.cemento * volTotal;
+        const precioCemento = getVal('precioCemento', cementoTipo==='P250'?350:380);
+        const precioArena = getVal('precioArena',280);
+        const cementoKg = tipo==='grueso' ? 350*volTotal : 300*volTotal;
         const cementoSacos = Math.ceil(cementoKg/42.5);
-        const arenaM3 = datos.arena * volTotal;
-        const calKg = (datos.cal||0) * volTotal;
-        const calSacos = calKg ? Math.ceil(calKg/25) : 0;
-        const aguaLitros = Math.ceil(200 * volTotal);
-
-        const importeCemento = cementoSacos * precioCemento;
-        const importeArena = arenaM3 * precioArena;
-        const importeCal = calSacos * 150; // precio cal defecto
-        const importeAgua = aguaLitros * preciosDef.agua;
-        const totalMat = importeCemento + importeArena + importeCal + importeAgua;
-
-        let tabla = '';
-        tabla += `<tr><td>Cemento ${cementoTipo}</td><td>${cementoSacos}</td><td>sacos (42.5 kg)</td><td>${precioCemento.toFixed(2)}</td><td>${importeCemento.toFixed(2)}</td></tr>`;
-        tabla += `<tr><td>Arena</td><td>${arenaM3.toFixed(2)}</td><td>m³</td><td>${precioArena.toFixed(2)}</td><td>${importeArena.toFixed(2)}</td></tr>`;
-        if(calSacos>0) tabla += `<tr><td>Cal hidráulica</td><td>${calSacos}</td><td>sacos (25 kg)</td><td>150.00</td><td>${importeCal.toFixed(2)}</td></tr>`;
-        tabla += `<tr><td>Agua</td><td>${aguaLitros}</td><td>litros</td><td>${preciosDef.agua.toFixed(2)}</td><td>${importeAgua.toFixed(2)}</td></tr>`;
-
-        document.querySelector('#tablaMateriales tbody').innerHTML = tabla;
+        const arenaM3 = tipo==='grueso' ? 1.2*volTotal : 1.0*volTotal;
+        const aguaLitros = Math.ceil(200*volTotal);
+        const impCem = cementoSacos*precioCemento, impAre = arenaM3*precioArena, impAgua = aguaLitros*0.1;
+        const totalMat = impCem+impAre+impAgua;
+        document.querySelector('#tablaMateriales tbody').innerHTML = `<tr><td>Cemento ${cementoTipo}</td><td>${cementoSacos}</td><td>sacos</td><td>${precioCemento.toFixed(2)}</td><td>${impCem.toFixed(2)}</td></tr><tr><td>Arena</td><td>${arenaM3.toFixed(2)}</td><td>m³</td><td>${precioArena.toFixed(2)}</td><td>${impAre.toFixed(2)}</td></tr><tr><td>Agua</td><td>${aguaLitros}</td><td>litros</td><td>0.10</td><td>${impAgua.toFixed(2)}</td></tr>`;
         document.getElementById('totalMateriales').textContent = totalMat.toFixed(2);
-
-        const horasHombre = datos.horas * area;
-        const totalHombres = datos.oficiales + (datos.ayudantes||0);
-        const dias = Math.ceil((horasHombre/totalHombres/8)*10)/10;
-        const precioMOm2 = manodeObraPrecio[manoTipo];
-        const importeMO = precioMOm2 * area;
-
-        document.getElementById('tablaManoObra').innerHTML = `<tr><td>${manoTipo==='precons'?'Precons III':manoTipo==='mipyme'?'MiPyme':'Particular'}</td><td>${totalHombres} (${datos.oficiales} of. + ${datos.ayudantes||0} ayud.)</td><td>${dias} día(s)</td><td>${importeMO.toFixed(2)} CUP</td></tr>`;
+        const preciosMO = { precons:250, mipyme:200, particular:320 };
+        const importeMO = preciosMO[manoTipo]*area;
+        document.getElementById('tablaManoObra').innerHTML = `<tr><td>${manoTipo==='precons'?'Precons III':manoTipo==='mipyme'?'MiPyme':'Particular'}</td><td>2 (1 of. + 1 ayud.)</td><td>${Math.ceil(area/8)} día(s)</td><td>${importeMO.toFixed(2)} CUP</td></tr>`;
         document.getElementById('totalManoObra').textContent = importeMO.toFixed(2);
         document.getElementById('granTotal').textContent = (totalMat+importeMO).toFixed(2);
-        document.getElementById('explicacion').textContent = `Revestimiento ${tipo==='grueso'?'grueso (zarpeo)':'fino (enlucido)'} de ${espesorCm} cm de espesor. Dosificación 1:3.`;
-        resDiv.classList.add('visible');
+        document.getElementById('explicacion').textContent = `Revestimiento ${tipo} de ${espesor*100} cm. Dosificación 1:3.`;
+        document.getElementById('resultados').classList.add('visible');
     });
 })();
 </script>
