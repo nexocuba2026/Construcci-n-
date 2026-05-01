@@ -5,862 +5,365 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cálculo de Muros</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: #f5f5f7;
-            color: #1d1d1f;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 20px;
+            background: #f5f5f7; color: #1d1d1f; min-height: 100vh;
+            display: flex; justify-content: center; align-items: flex-start; padding: 20px;
         }
-
         .container {
-            max-width: 800px;
-            width: 100%;
-            background: #ffffff;
-            border-radius: 24px;
-            padding: 36px 28px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04), 0 2px 6px rgba(0, 0, 0, 0.03);
+            max-width: 800px; width: 100%; background: #fff; border-radius: 24px;
+            padding: 36px 28px; box-shadow: 0 8px 30px rgba(0,0,0,0.04);
             margin: 20px 0;
         }
-
-        .back-link {
-            display: inline-block;
-            margin-bottom: 24px;
-            color: #86868b;
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.2s;
-        }
-
-        .back-link:hover {
-            color: #1d1d1f;
-        }
-
-        h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            letter-spacing: -0.5px;
-            margin-bottom: 8px;
-        }
-
-        .subtitle {
-            font-size: 0.95rem;
-            color: #86868b;
-            margin-bottom: 32px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-weight: 500;
-            font-size: 0.9rem;
-            margin-bottom: 6px;
-            color: #1d1d1f;
-        }
-
+        .back-link { color: #86868b; text-decoration: none; font-size: 0.9rem; display: inline-block; margin-bottom: 24px; }
+        h1 { font-size: 1.8rem; font-weight: 600; margin-bottom: 8px; }
+        .subtitle { color: #86868b; margin-bottom: 32px; }
+        .form-group { margin-bottom: 20px; }
+        label { font-weight: 500; font-size: 0.9rem; display: block; margin-bottom: 6px; }
         select, input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 1px solid #d2d2d7;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            font-family: inherit;
-            background: #f9f9fb;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            appearance: none;
-            -webkit-appearance: none;
+            width: 100%; padding: 12px 16px; border: 1px solid #d2d2d7; border-radius: 12px;
+            font-size: 0.95rem; background: #f9f9fb; appearance: none;
         }
-
         select {
             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2386868b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-size: 18px;
+            background-repeat: no-repeat; background-position: right 12px center; background-size: 18px;
         }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: #86868b;
-            box-shadow: 0 0 0 3px rgba(0,0,0,0.04);
-        }
-
-        .row {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
-
-        .row .form-group {
-            flex: 1;
-            min-width: 140px;
-        }
-
+        .row { display: flex; gap: 16px; flex-wrap: wrap; }
+        .row .form-group { flex: 1; min-width: 140px; }
         .btn {
-            display: block;
-            width: 100%;
-            padding: 14px;
-            background: #1d1d1f;
-            color: #ffffff;
-            border: none;
-            border-radius: 14px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-            margin-top: 8px;
+            width: 100%; padding: 14px; background: #1d1d1f; color: #fff; border: none;
+            border-radius: 14px; font-size: 1rem; font-weight: 500; cursor: pointer; margin-top: 8px;
         }
-
-        .btn:hover {
-            background: #2d2d2f;
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .btn-copy {
-            background: transparent;
-            color: #1d1d1f;
-            border: 1px solid #d2d2d7;
-            margin-top: 12px;
-        }
-
-        .btn-copy:hover {
-            background: #f5f5f7;
-            border-color: #86868b;
-        }
-
+        .btn-copy { background: transparent; color: #1d1d1f; border: 1px solid #d2d2d7; margin-top: 12px; }
         .results {
-            margin-top: 36px;
-            padding: 28px;
-            background: #f9f9fb;
-            border-radius: 20px;
-            display: none;
-            overflow-x: auto;
+            margin-top: 36px; padding: 28px; background: #f9f9fb; border-radius: 20px;
+            display: none; overflow-x: auto;
         }
-
-        .results.visible {
-            display: block;
-        }
-
-        .results h2 {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-
+        .results.visible { display: block; }
         .tabla-materiales {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-            font-size: 0.75rem;
-            table-layout: auto;
-            word-break: break-word;
+            width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.75rem;
         }
-
-        .tabla-materiales th {
-            text-align: left;
-            font-weight: 500;
-            color: #86868b;
-            padding: 6px 4px;
-            border-bottom: 1px solid #d2d2d7;
-            white-space: nowrap;
-        }
-
-        .tabla-materiales td {
-            padding: 6px 4px;
-            border-bottom: 1px solid #f0f0f2;
-            vertical-align: top;
-        }
-
-        .tabla-materiales tr:last-child td {
-            border-bottom: none;
-        }
-
-        .totales {
-            font-weight: 600;
-            margin-bottom: 12px;
-        }
-
-        .explanation {
-            margin-top: 24px;
-            font-size: 0.8rem;
-            color: #86868b;
-            line-height: 1.5;
-            border-top: 1px solid #e5e5ea;
-            padding-top: 16px;
-        }
-
-        .sketch {
-            margin: 24px 0;
-            padding: 16px;
-            background: #f9f9fb;
-            border-radius: 12px;
-            text-align: center;
-            display: none;
-        }
-
-        .sketch.visible {
-            display: block;
-        }
-
-        .sketch svg {
-            max-width: 100%;
-            height: auto;
-        }
-
-        .copy-notice {
-            display: inline-block;
-            margin-left: 8px;
-            font-size: 0.8rem;
-            color: #34c759;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .copy-notice.show {
-            opacity: 1;
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 24px 18px;
-            }
-            .row {
-                flex-direction: column;
-                gap: 0;
-            }
-        }
+        .tabla-materiales th { text-align: left; color: #86868b; padding: 6px 4px; border-bottom: 1px solid #d2d2d7; }
+        .tabla-materiales td { padding: 6px 4px; border-bottom: 1px solid #f0f0f2; }
+        .totales { font-weight: 600; margin-bottom: 12px; }
+        .explanation { margin-top: 24px; font-size: 0.8rem; color: #86868b; border-top: 1px solid #e5e5ea; padding-top: 16px; }
+        .sketch { margin: 24px 0; padding: 16px; background: #f9f9fb; border-radius: 12px; text-align: center; display: none; }
+        .sketch.visible { display: block; }
+        .copy-notice { margin-left: 8px; font-size: 0.8rem; color: #34c759; opacity: 0; }
+        .copy-notice.show { opacity: 1; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <a href="index.html" class="back-link">← Volver al inicio</a>
-        <h1>Cálculo de Muros</h1>
-        <p class="subtitle">Configure los parámetros para obtener materiales, mano de obra y costos</p>
+<div class="container">
+    <a href="index.html" class="back-link">← Volver al inicio</a>
+    <h1>Cálculo de Muros</h1>
+    <p class="subtitle">Configure los parámetros para obtener materiales, mano de obra y costos</p>
 
-        <div class="form-group">
-            <label for="tipoMuro">Tipo de muro</label>
-            <select id="tipoMuro">
-                <option value="">-- Seleccione --</option>
-                <option value="bloque">Bloque de concreto</option>
-                <option value="ladrillo_hueco">Ladrillo hueco</option>
-                <option value="ladrillo_macizo">Ladrillo macizo</option>
-                <option value="pladur">Pladur (drywall)</option>
-            </select>
-        </div>
+    <div class="form-group">
+        <label for="tipoMuro">Tipo de muro</label>
+        <select id="tipoMuro">
+            <option value="">-- Seleccione --</option>
+            <option value="bloque">Bloque de concreto</option>
+            <option value="ladrillo_hueco">Ladrillo hueco</option>
+            <option value="ladrillo_macizo">Ladrillo macizo</option>
+            <option value="pladur">Pladur (drywall)</option>
+        </select>
+    </div>
+    <div id="opcionesEspecificas"></div>
 
-        <div id="opcionesEspecificas"></div>
-
-        <div class="row">
-            <div class="form-group">
-                <label for="largo">Largo (m)</label>
-                <input type="number" id="largo" placeholder="Ej. 4.0" step="0.01" min="0">
-            </div>
-            <div class="form-group">
-                <label for="alto">Alto (m)</label>
-                <input type="number" id="alto" placeholder="Ej. 2.5" step="0.01" min="0">
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label for="desperdicio">Desperdicio (%)</label>
-            <select id="desperdicio">
-                <option value="0">0%</option>
-                <option value="3" selected>3%</option>
-                <option value="5">5%</option>
-                <option value="7">7%</option>
-                <option value="10">10%</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="manoObra">Tipo de mano de obra</label>
-            <select id="manoObra">
-                <option value="">-- Seleccione --</option>
-                <option value="precons">Precons III</option>
-                <option value="mipyme">MiPyme</option>
-                <option value="particular">Particular</option>
-            </select>
-        </div>
-
-        <button class="btn" id="calcularBtn">Calcular</button>
-
-        <div class="sketch" id="sketchContainer"></div>
-
-        <div class="results" id="resultados">
-            <h2>Resultado</h2>
-            <table class="tabla-materiales" id="tablaMateriales">
-                <thead>
-                    <tr>
-                        <th>Material</th>
-                        <th>Cantidad</th>
-                        <th>Unidad</th>
-                        <th>Precio unit.</th>
-                        <th>Importe</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <p class="totales"><strong>Total Materiales:</strong> <span id="totalMateriales"></span> CUP</p>
-
-            <table class="tabla-materiales" style="margin-top:20px;" id="tablaManoObraTabla">
-                <thead>
-                    <tr>
-                        <th>Mano de obra</th>
-                        <th>Hombres</th>
-                        <th>Tiempo</th>
-                        <th>Precio</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaManoObra"></tbody>
-            </table>
-            <p class="totales"><strong>Total Mano de Obra:</strong> <span id="totalManoObra"></span> CUP</p>
-            <p style="font-size:1.1rem; margin-top:12px;" class="totales"><strong>Gran Total:</strong> <span id="granTotal"></span> CUP</p>
-
-            <button class="btn btn-copy" id="copiarBtn">
-                📋 Copiar resultados <span class="copy-notice" id="copyNotice">¡Copiado!</span>
-            </button>
-
-            <div class="explanation" id="explicacion"></div>
-        </div>
+    <div class="row">
+        <div class="form-group"><label for="largo">Largo (m)</label><input type="number" id="largo" placeholder="Ej. 4.0" step="0.01" min="0"></div>
+        <div class="form-group"><label for="alto">Alto (m)</label><input type="number" id="alto" placeholder="Ej. 2.5" step="0.01" min="0"></div>
     </div>
 
-    <script>
-        (function() {
-            const tipoMuroSelect = document.getElementById('tipoMuro');
-            const opcionesEspecificas = document.getElementById('opcionesEspecificas');
-            const largoInput = document.getElementById('largo');
-            const altoInput = document.getElementById('alto');
-            const desperdicioSelect = document.getElementById('desperdicio');
-            const manoObraSelect = document.getElementById('manoObra');
-            const calcularBtn = document.getElementById('calcularBtn');
-            const resultadosDiv = document.getElementById('resultados');
-            const sketchContainer = document.getElementById('sketchContainer');
-            const copiarBtn = document.getElementById('copiarBtn');
-            const copyNotice = document.getElementById('copyNotice');
+    <div class="form-group">
+        <label for="desperdicio">Desperdicio (%)</label>
+        <select id="desperdicio"><option value="0">0%</option><option value="3" selected>3%</option><option value="5">5%</option><option value="7">7%</option><option value="10">10%</option></select>
+    </div>
 
-            const preciosInsumos = {
-                cementoP250: 350,
-                cementoP350: 380,
-                arena: 280,
-                cal: 150,
-                agua: 0.10,
-                acero: 22
-            };
+    <div class="form-group">
+        <label for="manoObra">Tipo de mano de obra</label>
+        <select id="manoObra"><option value="">-- Seleccione --</option><option value="precons">Precons III</option><option value="mipyme">MiPyme</option><option value="particular">Particular</option></select>
+    </div>
 
-            const preciosManoObra = {
-                precons: 350,
-                mipyme: 280,
-                particular: 450
-            };
+    <button class="btn" id="calcularBtn">Calcular</button>
 
-            const rendimientos = {
-                bloque: { precons: 0.9, mipyme: 1.1, particular: 1.4, oficiales: 1, ayudantes: 1 },
-                ladrillo_hueco: { precons: 0.7, mipyme: 0.9, particular: 1.2, oficiales: 1, ayudantes: 0.5 },
-                ladrillo_macizo: {
-                    alicatado: { precons: 1.5, mipyme: 1.8, particular: 2.2, oficiales: 2, ayudantes: 1 },
-                    citara: { precons: 1.2, mipyme: 1.5, particular: 1.8, oficiales: 1, ayudantes: 1 },
-                    citaron: { precons: 0.9, mipyme: 1.1, particular: 1.4, oficiales: 1, ayudantes: 1 }
-                },
-                pladur: { precons: 0.5, mipyme: 0.6, particular: 0.8, oficiales: 1, ayudantes: 0.5 }
-            };
+    <div class="sketch" id="sketchContainer"></div>
 
-            function actualizarOpciones() {
-                const tipo = tipoMuroSelect.value;
-                let html = '';
-                sketchContainer.classList.remove('visible');
-                sketchContainer.innerHTML = '';
+    <div class="results" id="resultados">
+        <h2>Resultado</h2>
+        <table class="tabla-materiales" id="tablaMateriales"><thead><tr><th>Material</th><th>Cantidad</th><th>Unidad</th><th>Precio unit.</th><th>Importe</th></tr></thead><tbody></tbody></table>
+        <p class="totales"><strong>Total Materiales:</strong> <span id="totalMateriales"></span> CUP</p>
+        <table class="tabla-materiales" id="tablaManoObraTabla"><thead><tr><th>Mano de obra</th><th>Hombres</th><th>Tiempo</th><th>Precio</th></tr></thead><tbody id="tablaManoObra"></tbody></table>
+        <p class="totales"><strong>Total Mano de Obra:</strong> <span id="totalManoObra"></span> CUP</p>
+        <p style="font-size:1.1rem;" class="totales"><strong>Gran Total:</strong> <span id="granTotal"></span> CUP</p>
+        <button class="btn btn-copy" id="copiarBtn">📋 Copiar resultados <span class="copy-notice" id="copyNotice">¡Copiado!</span></button>
+        <div class="explanation" id="explicacion"></div>
+    </div>
+</div>
 
-                if (tipo === 'bloque') {
-                    html = `
-                        <div class="row">
-                            <div class="form-group">
-                                <label for="tipoBloque">Tipo de bloque</label>
-                                <select id="tipoBloque">
-                                    <option value="10">Bloque 10 cm</option>
-                                    <option value="15">Bloque 15 cm</option>
-                                    <option value="20">Bloque 20 cm</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="precioBloque">Precio del bloque (CUP)</label>
-                                <input type="number" id="precioBloque" placeholder="Ej. 100" step="0.01" min="0">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group">
-                                <label for="tipoCemento">Tipo de cemento</label>
-                                <select id="tipoCemento">
-                                    <option value="P250">P-250</option>
-                                    <option value="P350">P-350</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="precioCemento">Precio bolsa cemento 42.5 kg (CUP)</label>
-                                <input type="number" id="precioCemento" placeholder="Precio por bolsa" step="0.01" min="0">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group">
-                                <label for="precioArena">Precio arena (CUP/m³)</label>
-                                <input type="number" id="precioArena" placeholder="Ej. 280" step="0.01" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="junta">Grosor de junta</label>
-                                <select id="junta">
-                                    <option value="1">1 cm</option>
-                                    <option value="1.5">1.5 cm</option>
-                                </select>
-                            </div>
-                        </div>
-                    `;
-                } else if (tipo === 'ladrillo_hueco') {
-                    html = `
-                        <div class="row">
-                            <div class="form-group">
-                                <label for="precioLadrilloH">Precio ladrillo hueco (CUP)</label>
-                                <input type="number" id="precioLadrilloH" placeholder="Ej. 80" step="0.01" min="0">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group">
-                                <label for="tipoCementoH">Tipo de cemento</label>
-                                <select id="tipoCementoH">
-                                    <option value="P250">P-250</option>
-                                    <option value="P350">P-350</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="precioCementoH">Precio bolsa cemento 42.5 kg (CUP)</label>
-                                <input type="number" id="precioCementoH" placeholder="Precio por bolsa" step="0.01" min="0">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group">
-                                <label for="precioArenaH">Precio arena (CUP/m³)</label>
-                                <input type="number" id="precioArenaH" placeholder="Ej. 280" step="0.01" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="juntaH">Grosor de junta</label>
-                                <select id="juntaH">
-                                    <option value="1">1 cm</option>
-                                    <option value="1.5">1.5 cm</option>
-                                </select>
-                            </div>
-                        </div>
-                    `;
-                } else if (tipo === 'ladrillo_macizo') {
-                    html = `
-                        <div class="row">
-                            <div class="form-group">
-                                <label for="colocacionMacizo">Forma de colocación</label>
-                                <select id="colocacionMacizo">
-                                    <option value="alicatado">Alicatado (25 cm espesor)</option>
-                                    <option value="citara">Citara (12 cm espesor)</option>
-                                    <option value="citaron">Citarón (7 cm espesor)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="precioLadrilloM">Precio ladrillo macizo (CUP)</label>
-                                <input type="number" id="precioLadrilloM" placeholder="Ej. 45" step="0.01" min="0">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group">
-                                <label for="tipoCementoM">Tipo de cemento</label>
-                                <select id="tipoCementoM">
-                                    <option value="P250">P-250</option>
-                                    <option value="P350">P-350</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="precioCementoM">Precio bolsa cemento 42.5 kg (CUP)</label>
-                                <input type="number" id="precioCementoM" placeholder="Precio por bolsa" step="0.01" min="0">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group">
-                                <label for="precioArenaM">Precio arena (CUP/m³)</label>
-                                <input type="number" id="precioArenaM" placeholder="Ej. 280" step="0.01" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="juntaM">Grosor de junta</label>
-                                <select id="juntaM">
-                                    <option value="1">1 cm</option>
-                                    <option value="1.5">1.5 cm</option>
-                                </select>
-                            </div>
-                        </div>
-                    `;
-                } else if (tipo === 'pladur') {
-                    html = `
-                        <div class="row">
-                            <div class="form-group">
-                                <label for="tipoPlancha">Tipo de plancha</label>
-                                <select id="tipoPlancha">
-                                    <option value="2.4x1.2">2.4 m x 1.2 m</option>
-                                    <option value="2.0x1.2">2.0 m x 1.2 m</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="caras">Número de caras</label>
-                                <select id="caras">
-                                    <option value="doble">Doble cara</option>
-                                    <option value="simple">Una cara</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group">
-                                <label for="separacionPerfiles">Separación entre montantes (cm)</label>
-                                <input type="number" id="separacionPerfiles" placeholder="Ej. 40" value="40" step="1" min="20" max="120">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group">
-                                <label for="precioPlancha">Precio plancha (CUP)</label>
-                                <input type="number" id="precioPlancha" placeholder="Ej. 350" step="0.01" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="precioCinta">Precio cinta mata-juntas (CUP/m)</label>
-                                <input type="number" id="precioCinta" placeholder="Ej. 5" step="0.01" min="0">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group">
-                                <label for="precioPerfil">Precio perfil 3 m (CUP)</label>
-                                <input type="number" id="precioPerfil" placeholder="Ej. 120" step="0.01" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="precioMasilla">Precio bolsa masilla 10 kg (CUP)</label>
-                                <input type="number" id="precioMasilla" placeholder="Ej. 80" step="0.01" min="0">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group">
-                                <label for="precioTornilloPerfil">Precio tornillo para perfil (CUP)</label>
-                                <input type="number" id="precioTornilloPerfil" placeholder="Ej. 2" step="0.01" min="0">
-                            </div>
-                            <div class="form-group">
-                                <label for="precioTornilloPlancha">Precio tornillo para plancha (CUP)</label>
-                                <input type="number" id="precioTornilloPlancha" placeholder="Ej. 3" step="0.01" min="0">
-                            </div>
-                        </div>
-                    `;
-                }
+<script>
+(function() {
+    const tipoMuroSelect = document.getElementById('tipoMuro');
+    const opcionesEspecificas = document.getElementById('opcionesEspecificas');
+    const sketchContainer = document.getElementById('sketchContainer');
+    const calcularBtn = document.getElementById('calcularBtn');
+    const resultadoDiv = document.getElementById('resultados');
+    const copiarBtn = document.getElementById('copiarBtn');
+    const copyNotice = document.getElementById('copyNotice');
 
-                opcionesEspecificas.innerHTML = html;
-                mostrarCroquis(tipo);
+    const preciosInsumos = { cementoP250:350, cementoP350:380, arena:280, cal:150, agua:0.10 };
+    const preciosManoObra = { precons:350, mipyme:280, particular:450 };
+    const rendimientos = {
+        bloque: { precons:0.9, mipyme:1.1, particular:1.4, oficiales:1, ayudantes:1 },
+        ladrillo_hueco: { precons:0.7, mipyme:0.9, particular:1.2, oficiales:1, ayudantes:0.5 },
+        ladrillo_macizo: {
+            alicatado: { precons:1.5, mipyme:1.8, particular:2.2, oficiales:2, ayudantes:1 },
+            citara: { precons:1.2, mipyme:1.5, particular:1.8, oficiales:1, ayudantes:1 },
+            citaron: { precons:0.9, mipyme:1.1, particular:1.4, oficiales:1, ayudantes:1 }
+        },
+        pladur: { precons:0.5, mipyme:0.6, particular:0.8, oficiales:1, ayudantes:0.5 }
+    };
+
+    function getVal(id, def = 0) {
+        const el = document.getElementById(id);
+        if (!el) return def;
+        const v = parseFloat(el.value);
+        return isNaN(v) ? def : v;
+    }
+
+    function actualizarOpciones() {
+        const tipo = tipoMuroSelect.value;
+        let html = '';
+        sketchContainer.classList.remove('visible');
+        sketchContainer.innerHTML = '';
+
+        if (tipo === 'bloque') {
+            html = `
+                <div class="row"><div class="form-group"><label for="tipoBloque">Tipo de bloque</label><select id="tipoBloque"><option value="10">10 cm</option><option value="15">15 cm</option><option value="20">20 cm</option></select></div>
+                <div class="form-group"><label for="precioBloque">Precio bloque (CUP)</label><input type="number" id="precioBloque" placeholder="100" step="0.01"></div></div>
+                <div class="row"><div class="form-group"><label for="tipoCemento">Tipo de cemento</label><select id="tipoCemento"><option value="P250">P-250</option><option value="P350">P-350</option></select></div>
+                <div class="form-group"><label for="precioCemento">Precio bolsa 42.5 kg (CUP)</label><input type="number" id="precioCemento" placeholder="380" step="0.01"></div></div>
+                <div class="row"><div class="form-group"><label for="precioArena">Precio arena (CUP/m³)</label><input type="number" id="precioArena" placeholder="280" step="0.01"></div>
+                <div class="form-group"><label for="junta">Grosor de junta</label><select id="junta"><option value="1">1 cm</option><option value="1.5">1.5 cm</option></select></div></div>`;
+        } else if (tipo === 'ladrillo_hueco') {
+            html = `
+                <div class="form-group"><label for="precioLadrilloH">Precio ladrillo hueco (CUP)</label><input type="number" id="precioLadrilloH" placeholder="80" step="0.01"></div>
+                <div class="row"><div class="form-group"><label for="tipoCementoH">Cemento</label><select id="tipoCementoH"><option value="P250">P-250</option><option value="P350">P-350</option></select></div>
+                <div class="form-group"><label for="precioCementoH">Precio cemento (CUP)</label><input type="number" id="precioCementoH" placeholder="380" step="0.01"></div></div>
+                <div class="row"><div class="form-group"><label for="precioArenaH">Arena (CUP/m³)</label><input type="number" id="precioArenaH" placeholder="280"></div>
+                <div class="form-group"><label for="juntaH">Junta</label><select id="juntaH"><option value="1">1 cm</option><option value="1.5">1.5 cm</option></select></div></div>`;
+        } else if (tipo === 'ladrillo_macizo') {
+            html = `
+                <div class="row"><div class="form-group"><label for="colocacionMacizo">Colocación</label><select id="colocacionMacizo"><option value="alicatado">Alicatado (25 cm)</option><option value="citara">Citara (12 cm)</option><option value="citaron">Citarón (7 cm)</option></select></div>
+                <div class="form-group"><label for="precioLadrilloM">Precio macizo (CUP)</label><input type="number" id="precioLadrilloM" placeholder="45" step="0.01"></div></div>
+                <div class="row"><div class="form-group"><label for="tipoCementoM">Cemento</label><select id="tipoCementoM"><option value="P250">P-250</option><option value="P350">P-350</option></select></div>
+                <div class="form-group"><label for="precioCementoM">Precio cemento (CUP)</label><input type="number" id="precioCementoM" placeholder="380" step="0.01"></div></div>
+                <div class="row"><div class="form-group"><label for="precioArenaM">Arena (CUP/m³)</label><input type="number" id="precioArenaM" placeholder="280"></div>
+                <div class="form-group"><label for="juntaM">Junta</label><select id="juntaM"><option value="1">1 cm</option><option value="1.5">1.5 cm</option></select></div></div>`;
+        } else if (tipo === 'pladur') {
+            html = `
+                <div class="row"><div class="form-group"><label for="tipoPlancha">Plancha</label><select id="tipoPlancha"><option value="2.4x1.2">2.4x1.2 m</option><option value="2.0x1.2">2.0x1.2 m</option></select></div>
+                <div class="form-group"><label for="caras">Caras</label><select id="caras"><option value="doble">Doble</option><option value="simple">Simple</option></select></div></div>
+                <div class="form-group"><label for="separacionPerfiles">Separación montantes (cm)</label><input type="number" id="separacionPerfiles" value="40" step="1"></div>
+                <div class="row"><div class="form-group"><label for="precioPlancha">Precio plancha (CUP)</label><input type="number" id="precioPlancha" placeholder="350"></div>
+                <div class="form-group"><label for="precioCinta">Cinta (CUP/m)</label><input type="number" id="precioCinta" placeholder="5"></div></div>
+                <div class="row"><div class="form-group"><label for="precioPerfil">Perfil 3 m (CUP)</label><input type="number" id="precioPerfil" placeholder="120"></div>
+                <div class="form-group"><label for="precioMasilla">Masilla 10 kg (CUP)</label><input type="number" id="precioMasilla" placeholder="80"></div></div>
+                <div class="row"><div class="form-group"><label for="precioTornilloPerfil">Tornillo perfil (CUP)</label><input type="number" id="precioTornilloPerfil" placeholder="2"></div>
+                <div class="form-group"><label for="precioTornilloPlancha">Tornillo plancha (CUP)</label><input type="number" id="precioTornilloPlancha" placeholder="3"></div></div>`;
+        }
+        opcionesEspecificas.innerHTML = html;
+        mostrarCroquis(tipo);
+    }
+
+    function mostrarCroquis(tipo) {
+        sketchContainer.classList.add('visible');
+        let svg = '';
+        if (tipo === 'bloque') svg = `<svg width="200" height="100"><rect x="10" y="20" width="60" height="60" fill="#ccc" stroke="#333"/><rect x="80" y="20" width="60" height="60" fill="#ccc" stroke="#333"/><text x="10" y="95" font-size="9">Bloque 40x20</text></svg>`;
+        else if (tipo.includes('ladrillo')) svg = `<svg width="200" height="100"><rect x="10" y="20" width="25" height="12" fill="#cda87c" stroke="#8b5a2b"/><rect x="40" y="20" width="25" height="12" fill="#cda87c" stroke="#8b5a2b"/><text x="10" y="95" font-size="9">Ladrillo</text></svg>`;
+        else if (tipo === 'pladur') svg = `<svg width="200" height="100"><rect x="20" y="15" width="160" height="70" fill="#f0f0f0" stroke="#999"/><line x1="100" y1="15" x2="100" y2="85" stroke="#ccc" stroke-dasharray="4"/><text x="20" y="105" font-size="9">Pladur</text></svg>`;
+        sketchContainer.innerHTML = svg;
+    }
+
+    tipoMuroSelect.addEventListener('change', actualizarOpciones);
+    actualizarOpciones();
+
+    copiarBtn.addEventListener('click', () => {
+        if (!resultadoDiv.classList.contains('visible')) return;
+        navigator.clipboard.writeText(resultadoDiv.innerText).then(() => {
+            copyNotice.classList.add('show');
+            setTimeout(() => copyNotice.classList.remove('show'), 2000);
+        });
+    });
+
+    calcularBtn.addEventListener('click', () => {
+        const tipo = tipoMuroSelect.value;
+        const largo = getVal('largo'), alto = getVal('alto');
+        const desperdicio = parseFloat(document.getElementById('desperdicio').value) / 100;
+        const manoTipo = document.getElementById('manoObra').value;
+        if (!tipo || isNaN(largo) || isNaN(alto) || largo <= 0 || alto <= 0 || !manoTipo) {
+            alert('Complete todos los campos obligatorios.');
+            return;
+        }
+        const area = largo * alto;
+        let totalMat = 0, tablaHTML = '', explicacion = '';
+        const cementoKgPorM3 = 340, arenaM3PorM3 = 1.1;
+        let rend;
+
+        if (tipo === 'bloque') {
+            const tipoBloque = document.getElementById('tipoBloque')?.value || '10';
+            const precioBloque = getVal('precioBloque', 100);
+            const tipoCemento = document.getElementById('tipoCemento')?.value || 'P250';
+            const precioCemento = getVal('precioCemento', preciosInsumos.cementoP250);
+            const precioArena = getVal('precioArena', preciosInsumos.arena);
+            const juntaCm = parseFloat(document.getElementById('junta')?.value || 1);
+
+            const bloqueLargo = 0.4, bloqueAlto = 0.2;
+            const bloqueAreaConJunta = (bloqueLargo + juntaCm/100) * (bloqueAlto + juntaCm/100);
+            const bloquesPorM2 = 1 / bloqueAreaConJunta;
+            const cantidadBloques = Math.ceil(bloquesPorM2 * area * (1 + desperdicio));
+            const importeBloques = cantidadBloques * precioBloque;
+            totalMat += importeBloques;
+            tablaHTML += `<tr><td>Bloques ${tipoBloque} cm</td><td>${cantidadBloques}</td><td>unidad</td><td>${precioBloque.toFixed(2)}</td><td>${importeBloques.toFixed(2)}</td></tr>`;
+
+            const espesor = parseInt(tipoBloque)/100;
+            const volMuro = area * espesor;
+            const volBloques = cantidadBloques * (bloqueLargo * bloqueAlto * espesor);
+            let volMortero = (volMuro - volBloques) * (1 + desperdicio);
+            if (volMortero < 0.02 * area) volMortero = 0.02 * area;
+
+            const cementoKg = cementoKgPorM3 * volMortero, cementoSacos = Math.ceil(cementoKg/42.5);
+            const arenaM3 = arenaM3PorM3 * volMortero, aguaLitros = Math.ceil(200 * volMortero);
+            const impCem = cementoSacos * precioCemento, impAre = arenaM3 * precioArena, impAgua = aguaLitros * 0.1;
+            totalMat += impCem + impAre + impAgua;
+            tablaHTML += `<tr><td>Cemento ${tipoCemento}</td><td>${cementoSacos}</td><td>sacos</td><td>${precioCemento.toFixed(2)}</td><td>${impCem.toFixed(2)}</td></tr>`;
+            tablaHTML += `<tr><td>Arena</td><td>${arenaM3.toFixed(2)}</td><td>m³</td><td>${precioArena.toFixed(2)}</td><td>${impAre.toFixed(2)}</td></tr>`;
+            tablaHTML += `<tr><td>Agua</td><td>${aguaLitros}</td><td>litros</td><td>0.10</td><td>${impAgua.toFixed(2)}</td></tr>`;
+            explicacion = `Muro de bloque ${tipoBloque} cm. Junta ${juntaCm} cm. Mortero 1:3.`;
+            rend = rendimientos.bloque;
+        } else if (tipo === 'ladrillo_hueco') {
+            const precioLadrillo = getVal('precioLadrilloH', 80);
+            const tipoCemento = document.getElementById('tipoCementoH')?.value || 'P250';
+            const precioCemento = getVal('precioCementoH', preciosInsumos.cementoP250);
+            const precioArena = getVal('precioArenaH', preciosInsumos.arena);
+            const juntaCm = parseFloat(document.getElementById('juntaH')?.value || 1);
+
+            const ladrilloLargo = 0.25, ladrilloAlto = 0.07, ladrilloAncho = 0.12;
+            const ladrillosPorM2 = 1 / ((ladrilloLargo + juntaCm/100) * (ladrilloAlto + juntaCm/100));
+            const cantidadLadrillos = Math.ceil(ladrillosPorM2 * area * (1 + desperdicio));
+            totalMat += cantidadLadrillos * precioLadrillo;
+            tablaHTML += `<tr><td>Ladrillos huecos</td><td>${cantidadLadrillos}</td><td>unidad</td><td>${precioLadrillo.toFixed(2)}</td><td>${(cantidadLadrillos*precioLadrillo).toFixed(2)}</td></tr>`;
+
+            const volMuro = area * ladrilloAncho, volLadrillos = cantidadLadrillos * (ladrilloLargo * ladrilloAlto * ladrilloAncho);
+            let volMortero = (volMuro - volLadrillos) * (1 + desperdicio);
+            if (volMortero < 0.02 * area) volMortero = 0.02 * area;
+
+            const cementoKg = cementoKgPorM3 * volMortero, cementoSacos = Math.ceil(cementoKg/42.5);
+            const arenaM3 = arenaM3PorM3 * volMortero, aguaLitros = Math.ceil(200 * volMortero);
+            const impCem = cementoSacos * precioCemento, impAre = arenaM3 * precioArena, impAgua = aguaLitros * 0.1;
+            totalMat += impCem + impAre + impAgua;
+            tablaHTML += `<tr><td>Cemento ${tipoCemento}</td><td>${cementoSacos}</td><td>sacos</td><td>${precioCemento.toFixed(2)}</td><td>${impCem.toFixed(2)}</td></tr>`;
+            tablaHTML += `<tr><td>Arena</td><td>${arenaM3.toFixed(2)}</td><td>m³</td><td>${precioArena.toFixed(2)}</td><td>${impAre.toFixed(2)}</td></tr>`;
+            tablaHTML += `<tr><td>Agua</td><td>${aguaLitros}</td><td>litros</td><td>0.10</td><td>${impAgua.toFixed(2)}</td></tr>`;
+            explicacion = `Muro ladrillo hueco citara (12 cm). Junta ${juntaCm} cm. Mortero 1:3.`;
+            rend = rendimientos.ladrillo_hueco;
+        } else if (tipo === 'ladrillo_macizo') {
+            const colocacion = document.getElementById('colocacionMacizo')?.value || 'citara';
+            const precioLadrillo = getVal('precioLadrilloM', 45);
+            const tipoCemento = document.getElementById('tipoCementoM')?.value || 'P250';
+            const precioCemento = getVal('precioCementoM', preciosInsumos.cementoP250);
+            const precioArena = getVal('precioArenaM', preciosInsumos.arena);
+            const juntaCm = parseFloat(document.getElementById('juntaM')?.value || 1);
+
+            const ladrilloLargo = 0.25, ladrilloAncho = 0.12, ladrilloAlto = 0.07;
+            let ladrillosPorM2, espesor;
+            if (colocacion === 'alicatado') {
+                ladrillosPorM2 = 1 / ((ladrilloAncho + juntaCm/100) * (ladrilloAlto + juntaCm/100));
+                espesor = ladrilloLargo;
+            } else if (colocacion === 'citara') {
+                ladrillosPorM2 = 1 / ((ladrilloLargo + juntaCm/100) * (ladrilloAlto + juntaCm/100));
+                espesor = ladrilloAncho;
+            } else {
+                ladrillosPorM2 = 1 / ((ladrilloLargo + juntaCm/100) * (ladrilloAncho + juntaCm/100));
+                espesor = ladrilloAlto;
             }
+            const cantidadLadrillos = Math.ceil(ladrillosPorM2 * area * (1 + desperdicio));
+            totalMat += cantidadLadrillos * precioLadrillo;
+            tablaHTML += `<tr><td>Ladrillos macizos (${colocacion})</td><td>${cantidadLadrillos}</td><td>unidad</td><td>${precioLadrillo.toFixed(2)}</td><td>${(cantidadLadrillos*precioLadrillo).toFixed(2)}</td></tr>`;
 
-            function mostrarCroquis(tipo) {
-                sketchContainer.classList.add('visible');
-                let svg = '';
-                if (tipo === 'bloque') {
-                    svg = `<svg width="200" height="120" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="10" y="10" width="60" height="100" fill="#e0e0e0" stroke="#333" stroke-width="2"/>
-                        <rect x="80" y="10" width="60" height="100" fill="#e0e0e0" stroke="#333" stroke-width="2"/>
-                        <rect x="150" y="10" width="60" height="100" fill="#e0e0e0" stroke="#333" stroke-width="2"/>
-                        <line x1="70" y1="10" x2="70" y2="110" stroke="#333" stroke-width="1" stroke-dasharray="3"/>
-                        <line x1="140" y1="10" x2="140" y2="110" stroke="#333" stroke-width="1" stroke-dasharray="3"/>
-                        <text x="20" y="70" font-size="10" fill="#333">40x20</text>
-                        <text x="90" y="70" font-size="10" fill="#333">40x20</text>
-                        <text x="160" y="70" font-size="10" fill="#333">40x20</text>
-                        <text x="10" y="115" font-size="9" fill="#666">Bloques de concreto (vista en planta)</text>
-                    </svg>`;
-                } else if (tipo === 'ladrillo_hueco' || tipo === 'ladrillo_macizo') {
-                    svg = `<svg width="200" height="120" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="10" y="20" width="25" height="12" fill="#cda87c" stroke="#8b5a2b" stroke-width="2"/>
-                        <rect x="40" y="20" width="25" height="12" fill="#cda87c" stroke="#8b5a2b" stroke-width="2"/>
-                        <rect x="70" y="20" width="25" height="12" fill="#cda87c" stroke="#8b5a2b" stroke-width="2"/>
-                        <rect x="25" y="38" width="25" height="12" fill="#cda87c" stroke="#8b5a2b" stroke-width="2"/>
-                        <rect x="55" y="38" width="25" height="12" fill="#cda87c" stroke="#8b5a2b" stroke-width="2"/>
-                        <rect x="85" y="38" width="25" height="12" fill="#cda87c" stroke="#8b5a2b" stroke-width="2"/>
-                        <text x="10" y="70" font-size="9" fill="#555">Ladrillos (vista frontal)</text>
-                    </svg>`;
-                } else if (tipo === 'pladur') {
-                    svg = `<svg width="200" height="120" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="20" y="20" width="160" height="80" fill="#f0f0f0" stroke="#999" stroke-width="2"/>
-                        <line x1="20" y1="60" x2="180" y2="60" stroke="#ccc" stroke-width="1" stroke-dasharray="4"/>
-                        <line x1="100" y1="20" x2="100" y2="100" stroke="#ccc" stroke-width="1" stroke-dasharray="4"/>
-                        <rect x="40" y="30" width="50" height="20" fill="#ddd" stroke="#666" stroke-width="1"/>
-                        <rect x="110" y="30" width="50" height="20" fill="#ddd" stroke="#666" stroke-width="1"/>
-                        <rect x="40" y="70" width="50" height="20" fill="#ddd" stroke="#666" stroke-width="1"/>
-                        <rect x="110" y="70" width="50" height="20" fill="#ddd" stroke="#666" stroke-width="1"/>
-                        <text x="20" y="115" font-size="9" fill="#666">Pladur con estructura metálica</text>
-                    </svg>`;
-                }
-                sketchContainer.innerHTML = svg;
-            }
+            const volMuro = area * espesor, volLadrillos = cantidadLadrillos * (ladrilloLargo * ladrilloAncho * ladrilloAlto);
+            let volMortero = (volMuro - volLadrillos) * (1 + desperdicio);
+            if (volMortero < 0.02 * area) volMortero = 0.02 * area;
 
-            tipoMuroSelect.addEventListener('change', actualizarOpciones);
-            actualizarOpciones();
+            const cementoKg = cementoKgPorM3 * volMortero, cementoSacos = Math.ceil(cementoKg/42.5);
+            const arenaM3 = arenaM3PorM3 * volMortero, aguaLitros = Math.ceil(200 * volMortero);
+            const impCem = cementoSacos * precioCemento, impAre = arenaM3 * precioArena, impAgua = aguaLitros * 0.1;
+            totalMat += impCem + impAre + impAgua;
+            tablaHTML += `<tr><td>Cemento ${tipoCemento}</td><td>${cementoSacos}</td><td>sacos</td><td>${precioCemento.toFixed(2)}</td><td>${impCem.toFixed(2)}</td></tr>`;
+            tablaHTML += `<tr><td>Arena</td><td>${arenaM3.toFixed(2)}</td><td>m³</td><td>${precioArena.toFixed(2)}</td><td>${impAre.toFixed(2)}</td></tr>`;
+            tablaHTML += `<tr><td>Agua</td><td>${aguaLitros}</td><td>litros</td><td>0.10</td><td>${impAgua.toFixed(2)}</td></tr>`;
+            explicacion = `Muro macizo a ${colocacion}. Junta ${juntaCm} cm. Mortero 1:3.`;
+            rend = rendimientos.ladrillo_macizo[colocacion];
+        } else if (tipo === 'pladur') {
+            const planchaArea = document.getElementById('tipoPlancha')?.value === '2.4x1.2' ? 2.88 : 2.4;
+            const caras = document.getElementById('caras')?.value === 'doble' ? 2 : 1;
+            const separacionCm = getVal('separacionPerfiles', 40);
+            const precioPlancha = getVal('precioPlancha', 350), precioCinta = getVal('precioCinta', 5);
+            const precioPerfil = getVal('precioPerfil', 120), precioMasilla = getVal('precioMasilla', 80);
+            const precioTornPerfil = getVal('precioTornilloPerfil', 2), precioTornPlancha = getVal('precioTornilloPlancha', 3);
 
-            function getInputVal(id, defaultVal = 0) {
-                const el = document.getElementById(id);
-                if (!el) return defaultVal;
-                const val = parseFloat(el.value);
-                return isNaN(val) ? defaultVal : val;
-            }
+            const areaTotalPlacas = area * caras;
+            const cantPlanchas = Math.ceil((areaTotalPlacas / planchaArea) * (1 + desperdicio));
+            const impPlanchas = cantPlanchas * precioPlancha;
+            totalMat += impPlanchas;
+            tablaHTML += `<tr><td>Planchas yeso</td><td>${cantPlanchas}</td><td>unidad</td><td>${precioPlancha.toFixed(2)}</td><td>${impPlanchas.toFixed(2)}</td></tr>`;
 
-            copiarBtn.addEventListener('click', function() {
-                if (!resultadosDiv.classList.contains('visible')) return;
-                const texto = resultadosDiv.innerText;
-                navigator.clipboard.writeText(texto).then(() => {
-                    copyNotice.classList.add('show');
-                    setTimeout(() => copyNotice.classList.remove('show'), 2000);
-                }).catch(() => {
-                    alert('No se pudo copiar al portapapeles.');
-                });
-            });
+            const canalesU_m = 2 * largo;
+            const numMontantes = Math.ceil(largo / (separacionCm / 100)) + 1;
+            const montantesM = numMontantes * alto;
+            const perfiles3m = Math.ceil((canalesU_m + montantesM) / 3);
+            const impPerfiles = perfiles3m * precioPerfil;
+            totalMat += impPerfiles;
+            tablaHTML += `<tr><td>Perfiles 3m</td><td>${perfiles3m}</td><td>unidad</td><td>${precioPerfil.toFixed(2)}</td><td>${impPerfiles.toFixed(2)}</td></tr>`;
 
-            calcularBtn.addEventListener('click', function() {
-                const tipo = tipoMuroSelect.value;
-                const largo = getInputVal('largo');
-                const alto = getInputVal('alto');
-                const desperdicioPorcentaje = parseFloat(desperdicioSelect.value) / 100;
-                const manoTipo = manoObraSelect.value;
+            const tornPlancha = Math.ceil(cantPlanchas * 30), tornPerfil = numMontantes * 4;
+            const impTornPlancha = tornPlancha * precioTornPlancha, impTornPerfil = tornPerfil * precioTornPerfil;
+            totalMat += impTornPlancha + impTornPerfil;
+            tablaHTML += `<tr><td>Tornillos plancha</td><td>${tornPlancha}</td><td>unidad</td><td>${precioTornPlancha.toFixed(2)}</td><td>${impTornPlancha.toFixed(2)}</td></tr>`;
+            tablaHTML += `<tr><td>Tornillos perfil</td><td>${tornPerfil}</td><td>unidad</td><td>${precioTornPerfil.toFixed(2)}</td><td>${impTornPerfil.toFixed(2)}</td></tr>`;
 
-                if (!tipo || isNaN(largo) || isNaN(alto) || largo <= 0 || alto <= 0 || !manoTipo) {
-                    alert('Complete todos los campos obligatorios (tipo, largo, alto, mano de obra).');
-                    return;
-                }
+            const cintaMetros = Math.ceil(area * caras * (1 + desperdicio));
+            const impCinta = cintaMetros * precioCinta;
+            totalMat += impCinta;
+            tablaHTML += `<tr><td>Cinta juntas</td><td>${cintaMetros}</td><td>m</td><td>${precioCinta.toFixed(2)}</td><td>${impCinta.toFixed(2)}</td></tr>`;
 
-                const area = largo * alto;
-                let totalMateriales = 0;
-                let tablaMaterialesHTML = '';
-                let explicacion = '';
+            const masillaKg = Math.ceil(area * caras * (1 + desperdicio));
+            const masillaBolsas = Math.ceil(masillaKg / 10);
+            const impMasilla = masillaBolsas * precioMasilla;
+            totalMat += impMasilla;
+            tablaHTML += `<tr><td>Masilla 10kg</td><td>${masillaBolsas}</td><td>bolsa</td><td>${precioMasilla.toFixed(2)}</td><td>${impMasilla.toFixed(2)}</td></tr>`;
 
-                const cementoKgPorM3 = 340;
-                const arenaM3PorM3 = 1.1;
+            explicacion = `Pladur plancha ${document.getElementById('tipoPlancha')?.value || '2.4x1.2'} m, ${caras} cara(s), montantes cada ${separacionCm} cm.`;
+            rend = rendimientos.pladur;
+        }
 
-                let precioCementoBolsa = 0;
-                let precioArenaM3 = 0;
-                let tipoCemento = 'P250';
+        const horasPorM2 = rend[manoTipo];
+        const horasTotal = horasPorM2 * area;
+        const totalHombres = rend.oficiales + rend.ayudantes;
+        const dias = Math.ceil((horasTotal / (totalHombres * 8)) * 10) / 10;
+        const importeMO = preciosManoObra[manoTipo] * area;
 
-                if (tipo === 'bloque') {
-                    const tipoBloque = document.getElementById('tipoBloque')?.value || '10';
-                    const precioBloque = getInputVal('precioBloque', 100);
-                    tipoCemento = document.getElementById('tipoCemento')?.value || 'P250';
-                    precioCementoBolsa = getInputVal('precioCemento', preciosInsumos.cementoP250);
-                    precioArenaM3 = getInputVal('precioArena', preciosInsumos.arena);
-                    const juntaCm = parseFloat(document.getElementById('junta')?.value || '1');
-
-                    const bloqueLargo = 0.40;
-                    const bloqueAlto = 0.20;
-                    const bloqueAreaConJunta = (bloqueLargo + juntaCm/100) * (bloqueAlto + juntaCm/100);
-                    const bloquesPorM2 = 1 / bloqueAreaConJunta;
-                    const cantidadBloques = Math.ceil(bloquesPorM2 * area * (1 + desperdicioPorcentaje));
-                    const importeBloques = cantidadBloques * precioBloque;
-                    totalMateriales += importeBloques;
-                    tablaMaterialesHTML += `<tr><td>Bloques de concreto ${tipoBloque} cm</td><td>${cantidadBloques}</td><td>unidad</td><td>${precioBloque.toFixed(2)}</td><td>${importeBloques.toFixed(2)}</td></tr>`;
-
-                    const volMuroSinDesp = area * (parseInt(tipoBloque)/100);
-                    const volBloquesSinDesp = cantidadBloques * (bloqueLargo * bloqueAlto * (parseInt(tipoBloque)/100));
-                    let volMortero = volMuroSinDesp - volBloquesSinDesp;
-                    if (volMortero < 0) volMortero = 0.02 * area;
-                    volMortero *= (1 + desperdicioPorcentaje);
-
-                    const cementoKg = cementoKgPorM3 * volMortero;
-                    const cementoSacos = Math.ceil(cementoKg / 42.5);
-                    const arenaM3 = arenaM3PorM3 * volMortero;
-                    const aguaLitros = Math.ceil(200 * volMortero);
-
-                    const importeCemento = cementoSacos * precioCementoBolsa;
-                    const importeArena = arenaM3 * precioArenaM3;
-                    const importeAgua = aguaLitros * preciosInsumos.agua;
-                    totalMateriales += importeCemento + importeArena + importeAgua;
-
-                    tablaMaterialesHTML += `<tr><td>Cemento ${tipoCemento}</td><td>${cementoSacos}</td><td>sacos (42.5 kg)</td><td>${precioCementoBolsa.toFixed(2)}</td><td>${importeCemento.toFixed(2)}</td></tr>`;
-                    tablaMaterialesHTML += `<tr><td>Arena gruesa</td><td>${arenaM3.toFixed(2)}</td><td>m³</td><td>${precioArenaM3.toFixed(2)}</td><td>${importeArena.toFixed(2)}</td></tr>`;
-                    tablaMaterialesHTML += `<tr><td>Agua</td><td>${aguaLitros}</td><td>litros</td><td>${preciosInsumos.agua.toFixed(2)}</td><td>${importeAgua.toFixed(2)}</td></tr>`;
-
-                    explicacion = `Muro de bloque de concreto de ${tipoBloque} cm de espesor. Junta de ${juntaCm} cm. Mortero 1:3 (cemento:arena).`;
-                    var rend = rendimientos.bloque;
-                }
-                else if (tipo === 'ladrillo_hueco') {
-                    const precioLadrillo = getInputVal('precioLadrilloH', 80);
-                    tipoCemento = document.getElementById('tipoCementoH')?.value || 'P250';
-                    precioCementoBolsa = getInputVal('precioCementoH', preciosInsumos.cementoP250);
-                    precioArenaM3 = getInputVal('precioArenaH', preciosInsumos.arena);
-                    const juntaCm = parseFloat(document.getElementById('juntaH')?.value || '1');
-
-                    const ladrilloLargo = 0.25;
-                    const ladrilloAlto = 0.07;
-                    const ladrilloAncho = 0.12;
-                    const ladrilloAreaConJunta = (ladrilloLargo + juntaCm/100) * (ladrilloAlto + juntaCm/100);
-                    const ladrillosPorM2 = 1 / ladrilloAreaConJunta;
-                    const cantidadLadrillos = Math.ceil(ladrillosPorM2 * area * (1 + desperdicioPorcentaje));
-                    const importeLadrillos = cantidadLadrillos * precioLadrillo;
-                    totalMateriales += importeLadrillos;
-                    tablaMaterialesHTML += `<tr><td>Ladrillos huecos</td><td>${cantidadLadrillos}</td><td>unidad</td><td>${precioLadrillo.toFixed(2)}</td><td>${importeLadrillos.toFixed(2)}</td></tr>`;
-
-                    const volMuro = area * ladrilloAncho;
-                    const volLadrillos = cantidadLadrillos * (ladrilloLargo * ladrilloAlto * ladrilloAncho);
-                    let volMortero = volMuro - volLadrillos;
-                    if (volMortero < 0) volMortero = 0.02 * area;
-                    volMortero *= (1 + desperdicioPorcentaje);
-
-                    const cementoKg = cementoKgPorM3 * volMortero;
-                    const cementoSacos = Math.ceil(cementoKg / 42.5);
-                    const arenaM3 = arenaM3PorM3 * volMortero;
-                    const aguaLitros = Math.ceil(200 * volMortero);
-
-                    const importeCemento = cementoSacos * precioCementoBolsa;
-                    const importeArena = arenaM3 * precioArenaM3;
-                    const importeAgua = aguaLitros * preciosInsumos.agua;
-                    totalMateriales += importeCemento + importeArena + importeAgua;
-
-                    tablaMaterialesHTML += `<tr><td>Cemento ${tipoCemento}</td><td>${cementoSacos}</td><td>sacos (42.5 kg)</td><td>${precioCementoBolsa.toFixed(2)}</td><td>${importeCemento.toFixed(2)}</td></tr>`;
-                    tablaMaterialesHTML += `<tr><td>Arena gruesa</td><td>${arenaM3.toFixed(2)}</td><td>m³</td><td>${precioArenaM3.toFixed(2)}</td><td>${importeArena.toFixed(2)}</td></tr>`;
-                    tablaMaterialesHTML += `<tr><td>Agua</td><td>${aguaLitros}</td><td>litros</td><td>${preciosInsumos.agua.toFixed(2)}</td><td>${importeAgua.toFixed(2)}</td></tr>`;
-
-                    explicacion = `Muro de ladrillo hueco asentado de citara (12 cm). Junta ${juntaCm} cm. Mortero 1:3.`;
-                    var rend = rendimientos.ladrillo_hueco;
-                }
-                else if (tipo === 'ladrillo_macizo') {
-                    const colocacion = document.getElementById('colocacionMacizo')?.value || 'citara';
-                    const precioLadrillo = getInputVal('precioLadrilloM', 45);
-                    tipoCemento = document.getElementById('tipoCementoM')?.value || 'P250';
-                    precioCementoBolsa = getInputVal('precioCementoM', preciosInsumos.cementoP250);
-                    precioArenaM3 = getInputVal('precioArenaM', preciosInsumos.arena);
-                    const juntaCm = parseFloat(document.getElementById('juntaM')?.value || '1');
-
-                    const ladrilloLargo = 0.25;
-                    const ladrilloAncho = 0.12;
-                    const ladrilloAlto = 0.07;
-                    let ladrillosPorM2, espesor;
-                    if (colocacion === 'alicatado') {
-                        ladrillosPorM2 = 1 / ((ladrilloAncho + juntaCm/100) * (ladrilloAlto + juntaCm/100));
-                        espesor = ladrilloLargo;
-                    } else if (colocacion === 'citara') {
-                        ladrillosPorM2 = 1 / ((ladrilloLargo + juntaCm/100) * (ladrilloAlto + juntaCm/100));
-                        espesor = ladrilloAncho;
-                    } else {
-                        ladrillosPorM2 = 1 / ((ladrilloLargo + juntaCm/100) * (ladrilloAncho + juntaCm/100));
-                        espesor = ladrilloAlto;
-                    }
-
-                    const cantidadLadrillos = Math.ceil(ladrillosPorM2 * area * (1 + desperdicioPorcentaje));
-                    const importeLadrillos = cantidadLadrillos * precioLadrillo;
-                    totalMateriales += importeLadrillos;
-                    tablaMaterialesHTML += `<tr><td>Ladrillos macizos (${colocacion})</td><td>${cantidadLadrillos}</td><td>unidad</td><td>${precioLadrillo.toFixed(2)}</td><td>${importeLadrillos.toFixed(2)}</td></tr>`;
-
-                    const volMuro = area * espesor;
-                    const volLadrillos = cantidadLadrillos * (ladrilloLargo * ladrilloAncho * ladrilloAlto);
-                    let volMortero = volMuro - volLadrillos;
-                    if (volMortero < 0) volMortero = 0.02 * area;
-                    volMortero *= (1 + desperdicioPorcentaje);
-
-                    const cementoKg = cementoKgPorM3 * volMortero;
-                    const cementoSacos = Math.ceil(cementoKg / 42.5);
-                    const arenaM3 = arenaM3PorM3 * volMortero;
-                    const aguaLitros = Math.ceil(200 * volMortero);
-
-                    const importeCemento = cementoSacos * precioCementoBolsa;
-                    const importeArena = arenaM3 * precioArenaM3;
-                    const importeAgua = aguaLitros * preciosInsumos.agua;
-                    totalMateriales += importeCemento + importeArena + importeAgua;
-
-                    tablaMaterialesHTML += `<tr><td>Cemento ${tipoCemento}</td><td>${cementoSacos}</td><td>sacos (42.5 kg)</td><td>${precioCementoBolsa.toFixed(2)}</td><td>${importeCemento.toFixed(2)}</td></tr>`;
-                    tablaMaterialesHTML += `<tr><td>Arena gruesa</td><td>${arenaM3.toFixed(2)}</td><td>m³</td><td>${precioArenaM3.toFixed(2)}</td><td>${importeArena.toFixed(2)}</td></tr>`;
-                    tablaMaterialesHTML += `<tr><td>Agua</td><td>${aguaLitros}</td><td>litros</td><td>${preciosInsumos.agua.toFixed(2)}</td><td>${importeAgua.toFixed(2)}</td></tr>`;
-
-                    explicacion = `Muro de ladrillo macizo colocado a ${colocacion}. Junta ${juntaCm} cm. Mortero 1:3.`;
-                    var rend = rendimientos.ladrillo_macizo[colocacion];
-                }
-                else if (tipo === 'pladur') {
-                    const tipoPlancha = document.getElementById('tipoPlancha')?.value || '2.4x1.2';
-                    const caras = document.getElementById('caras')?.value || 'doble';
-                    const separacionCm = getInputVal('separacionPerfiles', 40);
-                    const precioPlancha = getInputVal('precioPlancha', 350);
-                    const precioCinta = getInputVal('precioCinta', 5);
-                    const precioPerfil = getInputVal('precioPerfil', 120);
-                    const precioMasilla = getInputVal('precioMasilla', 80);
-                    const precioTornilloPerfil = getInputVal('precioTornilloPerfil', 2);
-                    const precioTornilloPlancha = getInputVal('precioTornilloPlancha', 3);
-
-                    const planchaArea = tipoPlancha === '2.4x1.2' ? 2.88 : 2.4;
-                    const numCaras = caras === 'doble' ? 2 : 1;
-                    const areaTotalPlacas = area * numCaras;
-                    const cantPlanchas = Math.ceil((areaTotalPlacas / planchaArea) * (1 + desperdicioPorcentaje));
-                    const importePlanchas = cantPlanchas * precioPlancha;
-                    totalMateriales += importePlanchas;
-                    tablaMaterialesHTML += `<tr><td>Planchas de yeso</td><td>${cantPlanchas}</td><td>unidad</td><td>${precioPlancha.toFixed(2)}</td><td>${importePlanchas.toFixed(2)}</td></tr>`;
-
-                    const canalesU_m = 2 * largo;
-                    const numMontantes = Math.ceil(largo / (separacionCm / 100)) + 1;
-                    const montantesM = numMontantes * alto;
-                    const totalPerfilesM = canalesU_m + montantesM;
-                    const perfiles3m = Math.ceil(totalPerfilesM / 3);
-                    const importePerfiles = perfiles3m * precioPerfil;
-                    totalMateriales += importePerfiles;
-                    tablaMaterialesHTML += `<tr><td>Perfiles metálicos 3 m</td><td>${perfiles3m}</td><td>unidad</td><td>${precioPerfil.toFixed(2)}</td><td>${importePerfiles.toFixed(2)}</td></tr>`;
-
-                    const tornillosPlancha = Math.ceil(cantPlanchas * 30);
-                    const importeTornPlancha = tornillosPlancha * precioTornilloPlancha;
-                    totalMateriales += importeTornPlancha;
-                    tablaMaterialesHTML += `<tr><td>Tornillos plancha</td><td>${tornillosPlancha}</td><td>unidad</td><td>${precioTornilloPlancha.toFixed(2)}</td><td>${importeTornPlancha.toFixed(2)}</td></tr>`;
-
-                    const tornillosPerfil = numMontantes * 4;
-                    const importeTornPerfil = tornillosPerfil * precioTornilloPerfil;
-                    totalMateriales += importeTornPerfil;
-                    tablaMaterialesHTML += `<tr><td>Tornillos perfil</td><td>${tornillosPerfil}</td><td>unidad</td><td>${precioTornilloPerfil.toFixed(2)}</td><td>${importeTornPerfil.toFixed(2)}</td></tr>`;
-
-                    const cintaMetros = Math.ceil(area * (caras === 'doble' ? 2 : 1) * (1 + desperdicioPorcentaje));
-                    const importeCinta = cintaMetros * precioCinta;
-                    totalMateriales += importeCinta;
-                    tablaMaterialesHTML += `<tr><td>Cinta mata-juntas</td><td>${cintaMetros}</td><td>m</td><td>${precioCinta.toFixed(2)}</td><td>${importeCinta.toFixed(2)}</td></tr>`;
-
-                    const masillaKg = Math.ceil(area * numCaras * (1 + desperdicioPorcentaje));
-                    const masillaBolsas = Math.ceil(masillaKg / 10);
-                    const importeMasilla = masillaBolsas * precioMasilla;
-                    totalMateriales += importeMasilla;
-                    tablaMaterialesHTML += `<tr><td>Masilla (bolsa 10 kg)</td><td>${masillaBolsas}</td><td>bolsa</td><td>${precioMasilla.toFixed(2)}</td><td>${importeMasilla.toFixed(2)}</td></tr>`;
-
-                    explicacion = `Muro de pladur con planchas de ${tipoPlancha.replace('x','×')} m, a ${caras} cara(s). Perfiles cada ${separacionCm} cm.`;
-                    var rend = rendimientos.pladur;
-                }
-
-                const horasPorM2 = rend[manoTipo];
-                const horasTotal = horasPorM2 * area;
-                const totalHombres = rend.oficiales + rend.ayudantes;
-                const dias = Math.ceil((horasTotal / (totalHombres * 8)) * 10) / 10;
-                const precioMOm2 = preciosManoObra[manoTipo];
-                const importeMO = precioMOm2 * area;
-
-                const manoObraRow = `<tr>
-                    <td>${manoTipo === 'precons' ? 'Precons III' : manoTipo === 'mipyme' ? 'MiPyme' : 'Particular'}</td>
-                    <td>${totalHombres} (${rend.oficiales} of. + ${rend.ayudantes} ayud.)</td>
-                    <td>${dias} día(s)</td>
-                    <td>${importeMO.toFixed(2)} CUP</td>
-                </tr>`;
-                document.getElementById('tablaManoObra').innerHTML = manoObraRow;
-                document.getElementById('totalManoObra').textContent = importeMO.toFixed(2);
-
-                document.getElementById('tablaMateriales').querySelector('tbody').innerHTML = tablaMaterialesHTML;
-                document.getElementById('totalMateriales').textContent = totalMateriales.toFixed(2);
-
-                const granTotal = totalMateriales + importeMO;
-                document.getElementById('granTotal').textContent = granTotal.toFixed(2);
-                document.getElementById('explicacion').textContent = explicacion;
-
-                resultadosDiv.classList.add('visible');
-            });
-        })();
-    </script>
+        document.querySelector('#tablaMateriales tbody').innerHTML = tablaHTML;
+        document.getElementById('totalMateriales').textContent = totalMat.toFixed(2);
+        document.getElementById('tablaManoObra').innerHTML = `<tr><td>${manoTipo==='precons'?'Precons III':manoTipo==='mipyme'?'MiPyme':'Particular'}</td><td>${totalHombres} (${rend.oficiales} of. + ${rend.ayudantes} ayud.)</td><td>${dias} día(s)</td><td>${importeMO.toFixed(2)} CUP</td></tr>`;
+        document.getElementById('totalManoObra').textContent = importeMO.toFixed(2);
+        document.getElementById('granTotal').textContent = (totalMat + importeMO).toFixed(2);
+        document.getElementById('explicacion').textContent = explicacion;
+        resultadoDiv.classList.add('visible');
+    });
+})();
+</script>
 </body>
 </html>
