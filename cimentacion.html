@@ -16,7 +16,7 @@
         .row { display:flex; gap:16px; }
         .row .form-group { flex:1; }
         .btn { width:100%; padding:14px; background:#1d1d1f; color:#fff; border:none; border-radius:14px; cursor:pointer; margin-top:8px; }
-        .results { margin-top:28px; padding:28px; background:#f9f9fb; border-radius:20px; display:none; }
+        .results { margin-top:28px; padding:28px; background:#f9f9fb; border-radius:20px; display:none; overflow-x:auto; }
         .results.visible { display:block; }
         .tabla-materiales { width:100%; border-collapse:collapse; font-size:0.75rem; margin-bottom:20px; }
         .tabla-materiales th { text-align:left; color:#86868b; padding:6px 4px; border-bottom:1px solid #d2d2d7; }
@@ -47,9 +47,15 @@
     <button class="btn" id="calcularBtn">Calcular</button>
     <div class="results" id="resultados">
         <h2>Resultado</h2>
-        <table class="tabla-materiales"><thead><tr><th>Material</th><th>Cantidad</th><th>Unidad</th><th>Precio unit.</th><th>Importe</th></tr></thead><tbody></tbody></table>
+        <table class="tabla-materiales" id="tablaMateriales">
+            <thead><tr><th>Material</th><th>Cantidad</th><th>Unidad</th><th>Precio unit.</th><th>Importe</th></tr></thead>
+            <tbody></tbody>
+        </table>
         <p class="totales"><strong>Total Materiales:</strong> <span id="totalMateriales"></span> CUP</p>
-        <table class="tabla-materiales"><thead><tr><th>Mano de obra</th><th>Hombres</th><th>Tiempo</th><th>Precio</th></tr></thead><tbody id="tablaManoObra"></tbody></table>
+        <table class="tabla-materiales">
+            <thead><tr><th>Mano de obra</th><th>Hombres</th><th>Tiempo</th><th>Precio</th></tr></thead>
+            <tbody id="tablaManoObra"></tbody>
+        </table>
         <p class="totales"><strong>Total Mano de Obra:</strong> <span id="totalManoObra"></span> CUP</p>
         <p style="font-size:1.1rem;"><strong>Gran Total:</strong> <span id="granTotal"></span> CUP</p>
     </div>
@@ -81,7 +87,13 @@
         const cemento = Math.ceil(350*volDesp/42.5), arena = 0.56*volDesp, grava = 0.84*volDesp, agua = Math.ceil(180*volDesp), acero = cuantia*volDesp;
         const impCem = cemento*pc, impAre = arena*pa, impGra = grava*pg, impAgu = agua*0.1, impAce = acero*pac;
         const totalMat = impCem+impAre+impGra+impAgu+impAce;
-        document.querySelector('#tablaMateriales tbody').innerHTML = `<tr><td>Cemento</td><td>${cemento}</td><td>sacos</td><td>${pc.toFixed(2)}</td><td>${impCem.toFixed(2)}</td></tr><tr><td>Arena</td><td>${arena.toFixed(2)}</td><td>m³</td><td>${pa.toFixed(2)}</td><td>${impAre.toFixed(2)}</td></tr><tr><td>Grava</td><td>${grava.toFixed(2)}</td><td>m³</td><td>${pg.toFixed(2)}</td><td>${impGra.toFixed(2)}</td></tr><tr><td>Agua</td><td>${agua}</td><td>litros</td><td>0.10</td><td>${impAgu.toFixed(2)}</td></tr><tr><td>Acero</td><td>${acero.toFixed(1)}</td><td>kg</td><td>${pac.toFixed(2)}</td><td>${impAce.toFixed(2)}</td></tr>`;
+        document.querySelector('#tablaMateriales tbody').innerHTML = `
+            <tr><td>Cemento</td><td>${cemento}</td><td>sacos</td><td>${pc.toFixed(2)}</td><td>${impCem.toFixed(2)}</td></tr>
+            <tr><td>Arena</td><td>${arena.toFixed(2)}</td><td>m³</td><td>${pa.toFixed(2)}</td><td>${impAre.toFixed(2)}</td></tr>
+            <tr><td>Grava</td><td>${grava.toFixed(2)}</td><td>m³</td><td>${pg.toFixed(2)}</td><td>${impGra.toFixed(2)}</td></tr>
+            <tr><td>Agua</td><td>${agua}</td><td>litros</td><td>0.10</td><td>${impAgu.toFixed(2)}</td></tr>
+            <tr><td>Acero</td><td>${acero.toFixed(1)}</td><td>kg</td><td>${pac.toFixed(2)}</td><td>${impAce.toFixed(2)}</td></tr>
+        `;
         document.getElementById('totalMateriales').textContent = totalMat.toFixed(2);
         const preciosMO = { precons:350, mipyme:280, particular:450 };
         const importeMO = preciosMO[manoTipo]*vol;
